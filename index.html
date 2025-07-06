@@ -48,12 +48,15 @@
 
     h1 {
       font-weight: 900;
-      font-size: clamp(3rem, 10vw, 6rem);
+      font-size: clamp(2rem, 8vw, 6rem);
       line-height: 1.1;
-      margin-bottom: 1.5rem;
+      margin-bottom: 3rem; /* bigger space */
       text-transform: none;
-      letter-spacing: -0.04em; /* reduced spacing */
+      letter-spacing: -0.04em;
       color: #17D860;
+      white-space: nowrap;       /* prevent wrapping */
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .countdown {
@@ -75,7 +78,7 @@
     }
 
     .countdown div span.value {
-      font-size: 1em; /* scaled by .countdown font-size */
+      font-size: 1em;
       line-height: 1;
       text-align: center;
       opacity: 0;
@@ -86,7 +89,7 @@
       font-size: clamp(0.75rem, 2vw, 1.25rem);
       margin-top: 8px;
       color: #17D860;
-      text-transform: capitalize; /* only first letter uppercase */
+      text-transform: capitalize;
     }
 
     @keyframes fadeInNum {
@@ -96,7 +99,7 @@
 
     @media (max-width: 480px) {
       h1 {
-        font-size: clamp(2rem, 15vw, 5rem);
+        font-size: clamp(1.5rem, 12vw, 5rem);
         letter-spacing: -0.03em;
       }
       .countdown {
@@ -236,4 +239,3 @@
 
 </body>
 </html>
-
