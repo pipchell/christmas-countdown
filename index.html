@@ -4,131 +4,42 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Christmas Countdown</title>
-  <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@900&display=swap" rel="stylesheet" />
   <style>
     body, html {
       margin: 0; padding: 0;
       height: 100%;
-      background-color: #000;
-      font-family: 'League Spartan', sans-serif;
-      font-weight: 900;
-      color: #17D860;
-      overflow-x: hidden;
+      background-color: #000000;
+      overflow: hidden;
+      user-select: none;
     }
-
-    .snow {
+    canvas {
+      display: block;
       position: fixed;
       top: 0; left: 0;
       width: 100vw;
       height: 100vh;
-      pointer-events: none;
       z-index: 0;
-    }
-
-    .container {
-      position: relative;
-      z-index: 10;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding: 0 20px;
-      box-sizing: border-box;
-    }
-
-    h1 {
-      font-weight: 900;
-      font-size: clamp(3rem, 8vw, 6rem);
-      margin-bottom: 2rem;
-      text-transform: capitalize;
-      letter-spacing: 0.15em;
-      color: #17D860;
-    }
-
-    .countdown {
-      display: flex;
-      justify-content: center;
-      gap: clamp(2rem, 6vw, 5rem);
-      width: 100%;
-      max-width: 800px;
-      color: #17D860;
-      flex-wrap: wrap;
-    }
-
-    .countdown div {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      user-select: none;
-      min-width: 80px;
-    }
-
-    .countdown div span.value {
-      font-size: clamp(3rem, 8vw, 5rem);
-      line-height: 1;
-      letter-spacing: 0.05em;
-    }
-
-    .countdown div span.label {
-      font-size: clamp(0.75rem, 2vw, 1rem);
-      margin-top: 6px;
-      text-transform: uppercase;
-      opacity: 0.7;
-      letter-spacing: 0.15em;
-    }
-
-    @media (max-width: 480px) {
-      .countdown {
-        gap: 2rem;
-      }
-
-      .countdown div span.value {
-        font-size: 3rem;
-      }
-
-      .countdown div span.label {
-        font-size: 0.75rem;
-      }
     }
   </style>
 </head>
 <body>
-
-  <canvas class="snow"></canvas>
-
-  <div class="container">
-    <h1>Christmas Countdown</h1>
-    <div class="countdown" aria-label="Countdown to Christmas">
-      <div>
-        <span class="value" id="days">--</span>
-        <span class="label">Days</span>
-      </div>
-      <div>
-        <span class="value" id="hours">--</span>
-        <span class="label">Hours</span>
-      </div>
-      <div>
-        <span class="value" id="minutes">--</span>
-        <span class="label">Minutes</span>
-      </div>
-      <div>
-        <span class="value" id="seconds">--</span>
-        <span class="label">Seconds</span>
-      </div>
-    </div>
-  </div>
+  <canvas id="canvas"></canvas>
 
   <script>
-    const canvas = document.querySelector('.snow');
+    const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
+
     let w, h;
     let flakes = [];
 
-    function init() {
+    // Setup sizes
+    function resize() {
       w = canvas.width = window.innerWidth;
       h = canvas.height = window.innerHeight;
+    }
+
+    // Initialize snow flakes
+    function initFlakes() {
       flakes = [];
       for (let i = 0; i < 100; i++) {
         flakes.push({
@@ -140,77 +51,130 @@
       }
     }
 
+    // Draw snow flakes
     function drawFlakes() {
-      ctx.clearRect(0, 0, w, h);
       ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
       ctx.beginPath();
-      for (let i = 0; i < flakes.length; i++) {
-        const f = flakes[i];
-        ctx.moveTo(f.x, f.y);
-        ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2, true);
+      for (let flake of flakes) {
+        ctx.moveTo(flake.x, flake.y);
+        ctx.arc(flake.x, flake.y, flake.r, 0, Math.PI * 2);
       }
       ctx.fill();
-      moveFlakes();
     }
 
+    // Move flakes down
     let angle = 0;
-
     function moveFlakes() {
       angle += 0.01;
-      for (let i = 0; i < flakes.length; i++) {
-        const f = flakes[i];
-        f.y += Math.pow(f.d, 2) + 1;
-        f.x += Math.sin(angle) * 2;
-
-        if (f.y > h) {
-          flakes[i] = { x: Math.random() * w, y: 0, r: f.r, d: f.d };
+      for (let flake of flakes) {
+        flake.y += Math.pow(flake.d, 2) + 1;
+        flake.x += Math.sin(angle) * 2;
+        if (flake.y > h) {
+          flake.x = Math.random() * w;
+          flake.y = 0;
         }
       }
     }
 
-    function animate() {
+    // Draw the countdown text & numbers on canvas
+    function drawCountdownText(days, hours, minutes, seconds) {
+      const baseFontSize = Math.min(w, h) / 12;
+
+      // Clear previous
+      ctx.clearRect(0, 0, w, h);
+
+      // Draw snow first
       drawFlakes();
-      requestAnimationFrame(animate);
+
+      // Set text styles that mimic your brand canvas glow:
+      ctx.fillStyle = '#17D860';
+      ctx.lineWidth = baseFontSize * 0.1;
+      ctx.strokeStyle = '#0f9a43';
+      ctx.shadowColor = '#17D860';
+      ctx.shadowBlur = baseFontSize * 0.15;
+
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.font = `900 ${baseFontSize * 1.4}px 'League Spartan', sans-serif`;
+
+      // Draw the title
+      ctx.lineJoin = 'round';
+      ctx.strokeText('Christmas Countdown', w/2, h * 0.15);
+      ctx.fillText('Christmas Countdown', w/2, h * 0.15);
+
+      // Positions for each countdown block horizontally
+      const positions = [0.18, 0.42, 0.66, 0.9];
+
+      // Draw each block number and label
+      ctx.font = `900 ${baseFontSize * 2.2}px 'League Spartan', sans-serif`;
+      for (let i = 0; i < 4; i++) {
+        let x = w * positions[i];
+        let yNum = h * 0.55;
+        let yLabel = h * 0.7;
+
+        // Get value and label
+        let value = [days, hours, minutes, seconds][i];
+        let label = ['Days', 'Hours', 'Minutes', 'Seconds'][i];
+
+        // Draw glowing stroke + fill for value
+        ctx.lineWidth = baseFontSize * 0.15;
+        ctx.strokeText(value, x, yNum);
+        ctx.fillText(value, x, yNum);
+
+        // Draw label smaller with less glow
+        ctx.font = `700 ${baseFontSize * 0.8}px 'League Spartan', sans-serif`;
+        ctx.shadowBlur = baseFontSize * 0.05;
+        ctx.lineWidth = baseFontSize * 0.05;
+        ctx.strokeText(label.toUpperCase(), x, yLabel);
+        ctx.fillText(label.toUpperCase(), x, yLabel);
+
+        // Reset big font for next value
+        ctx.font = `900 ${baseFontSize * 2.2}px 'League Spartan', sans-serif`;
+        ctx.shadowBlur = baseFontSize * 0.15;
+      }
     }
 
-    window.addEventListener('resize', init);
-    init();
-    animate();
-
+    // Update countdown values
     function updateCountdown() {
       const now = new Date();
-
       let year = now.getFullYear();
       const christmas = new Date(year, 11, 25, 0, 0, 0);
-
-      if (now > christmas) {
-        christmas.setFullYear(year + 1);
-      }
-
+      if (now > christmas) christmas.setFullYear(year + 1);
       const diff = christmas - now;
 
       if (diff <= 0) {
-        document.getElementById('days').textContent = "00";
-        document.getElementById('hours').textContent = "00";
-        document.getElementById('minutes').textContent = "00";
-        document.getElementById('seconds').textContent = "00";
+        drawCountdownText("00", "00", "00", "00");
         return;
       }
 
-      const seconds = Math.floor(diff / 1000) % 60;
-      const minutes = Math.floor(diff / (1000 * 60)) % 60;
-      const hours = Math.floor(diff / (1000 * 60 * 60)) % 24;
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const seconds = String(Math.floor(diff / 1000) % 60).padStart(2, '0');
+      const minutes = String(Math.floor(diff / (1000 * 60)) % 60).padStart(2, '0');
+      const hours = String(Math.floor(diff / (1000 * 60 * 60)) % 24).padStart(2, '0');
+      const days = String(Math.floor(diff / (1000 * 60 * 60 * 24))).padStart(2, '0');
 
-      document.getElementById('days').textContent = days.toString().padStart(2, '0');
-      document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
-      document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
-      document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+      drawCountdownText(days, hours, minutes, seconds);
     }
 
-    setInterval(updateCountdown, 1000);
-    updateCountdown();
+    // Animation loop
+    function animate() {
+      moveFlakes();
+      updateCountdown();
+      requestAnimationFrame(animate);
+    }
+
+    window.addEventListener('resize', () => {
+      resize();
+      initFlakes();
+      updateCountdown();
+    });
+
+    // Start
+    resize();
+    initFlakes();
+    animate();
   </script>
 
+  <!-- Load League Spartan font so text matches your brand -->
+  <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@900&display=swap" rel="stylesheet" />
 </body>
 </html>
