@@ -1,124 +1,94 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Christmas Countdown</title>
-
   <style>
-    /* Self-hosted League Spartan font from 1001fonts */
     @font-face {
-      font-family: 'League Spartan 1001';
-      src: url(data:font/woff2;base64,d09GMgABAAAAA...YOUR_BASE64_FONT_DATA_HERE...) format('woff2');
+      font-family: 'League Spartan';
+      src: url('./assets/LeagueSpartan-Bold.woff2') format('woff2'),
+           url('./assets/LeagueSpartan-Bold.woff') format('woff');
       font-weight: 900;
       font-style: normal;
-      font-display: swap;
     }
 
     body, html {
-      margin: 0; padding: 0;
+      margin: 0; 
+      padding: 0;
       height: 100%;
       background-color: #000000;
-      font-family: 'League Spartan 1001', sans-serif;
+      font-family: 'League Spartan', sans-serif;
       font-weight: 900;
       color: #17D860;
       overflow-x: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     .container {
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
       text-align: center;
       padding: 0 15px;
-      user-select: none;
+      max-width: 700px;
+      width: 100%;
     }
 
     h1 {
       font-weight: 900;
       font-size: clamp(2.5rem, 8vw, 6rem);
       line-height: 1.05;
-      margin: 0 0 1.5rem 0;
+      margin-bottom: 1.5rem;
       text-transform: capitalize;
       letter-spacing: 0.1em;
       color: #17D860;
-      -webkit-text-stroke: 1.5px #0f9a43;
-      text-shadow:
-        0 0 4px #17D860,
-        0 0 8px #17D860,
-        0 0 12px #0f9a43;
     }
 
     .countdown {
       display: flex;
       justify-content: center;
-      gap: clamp(1rem, 4vw, 3rem);
+      gap: clamp(2rem, 4vw, 4rem);
       font-weight: 900;
-      font-size: clamp(2rem, 6vw, 4rem);
+      font-size: clamp(3rem, 7vw, 5rem);
       letter-spacing: 0.05em;
-      max-width: 700px;
-      width: 100%;
       color: #17D860;
-      flex-wrap: nowrap;
+      flex-wrap: wrap;
     }
 
     .countdown div {
-      padding: 0;
-      min-width: 80px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      text-transform: uppercase;
       user-select: none;
+      min-width: 90px;
     }
 
     .countdown div span.value {
-      font-size: 3.5em;
+      font-size: 1em; /* full size controlled in .countdown */
       line-height: 1;
-      font-weight: 900;
-      -webkit-text-stroke: 1px #0f9a43;
-      text-shadow:
-        0 0 3px #17D860,
-        0 0 6px #17D860,
-        0 0 9px #0f9a43;
+      text-align: center;
     }
 
     .countdown div span.label {
-      font-size: 1rem;
-      margin-top: 6px;
+      font-size: clamp(0.75rem, 2vw, 1.25rem);
+      margin-top: 8px;
       opacity: 0.7;
-      font-weight: 700;
-      letter-spacing: 0.1em;
+      text-transform: uppercase;
     }
 
     @media (max-width: 480px) {
       .countdown {
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 1rem;
+        gap: 1.5rem;
+        font-size: clamp(2rem, 10vw, 4rem);
       }
 
       .countdown div {
         min-width: 70px;
       }
     }
-
-    /* Snow canvas styles */
-    .snow {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw;
-      height: 100vh;
-      pointer-events: none;
-      z-index: 0;
-    }
   </style>
 </head>
 <body>
-
-  <canvas class="snow"></canvas>
 
   <div class="container">
     <h1>Christmas Countdown</h1>
@@ -143,74 +113,11 @@
   </div>
 
   <script>
-    // Snow canvas setup and animation
-    const canvas = document.querySelector('.snow');
-    const ctx = canvas.getContext('2d');
-    let w, h;
-    let flakes = [];
-
-    function init() {
-      w = canvas.width = window.innerWidth;
-      h = canvas.height = window.innerHeight;
-      flakes = [];
-      for (let i = 0; i < 100; i++) {
-        flakes.push({
-          x: Math.random() * w,
-          y: Math.random() * h,
-          r: Math.random() * 4 + 1,
-          d: Math.random() + 1
-        });
-      }
-    }
-
-    function drawFlakes() {
-      ctx.clearRect(0, 0, w, h);
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-      ctx.beginPath();
-      for (let i = 0; i < flakes.length; i++) {
-        const f = flakes[i];
-        ctx.moveTo(f.x, f.y);
-        ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2, true);
-      }
-      ctx.fill();
-      moveFlakes();
-    }
-
-    let angle = 0;
-
-    function moveFlakes() {
-      angle += 0.01;
-      for (let i = 0; i < flakes.length; i++) {
-        const f = flakes[i];
-        f.y += Math.pow(f.d, 2) + 1;
-        f.x += Math.sin(angle) * 2;
-
-        if (f.y > h) {
-          flakes[i] = { x: Math.random() * w, y: 0, r: f.r, d: f.d };
-        }
-      }
-    }
-
-    function animate() {
-      drawFlakes();
-      requestAnimationFrame(animate);
-    }
-
-    window.addEventListener('resize', init);
-    init();
-    animate();
-
-    // Countdown logic
     function updateCountdown() {
       const now = new Date();
-
       let year = now.getFullYear();
       const christmas = new Date(year, 11, 25, 0, 0, 0);
-
-      if (now > christmas) {
-        christmas.setFullYear(year + 1);
-      }
-
+      if (now > christmas) christmas.setFullYear(year + 1);
       const diff = christmas - now;
 
       if (diff <= 0) {
@@ -235,5 +142,6 @@
     setInterval(updateCountdown, 1000);
     updateCountdown();
   </script>
+
 </body>
 </html>
