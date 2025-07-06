@@ -13,19 +13,19 @@
       font-style: normal;
     }
 
-    body, html {
-      margin: 0; 
-      padding: 0;
+    html, body {
       height: 100%;
-      background-color: #000000;
+      margin: 0;
+      padding: 0;
+      background-color: #000;
       font-family: 'League Spartan', sans-serif;
       font-weight: 900;
       color: #17D860;
       overflow-x: hidden;
       display: flex;
-      justify-content: center;   /* centers horizontally */
-      align-items: center;       /* centers vertically */
-      text-align: center;        /* centers text inside containers */
+      justify-content: center;
+      align-items: center;
+      text-align: center;
       position: relative;
     }
 
@@ -44,19 +44,20 @@
       max-width: 700px;
       width: 100%;
       padding: 0 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     h1 {
       font-weight: 900;
-      font-size: clamp(2rem, 8vw, 6rem);
+      font-size: clamp(1.5rem, 8vw, 6rem);
       line-height: 1.1;
       margin-bottom: 3rem;
-      text-transform: none;
       letter-spacing: -0.04em;
       color: #17D860;
       white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      padding: 0 10px;
     }
 
     .countdown {
@@ -99,7 +100,7 @@
 
     @media (max-width: 480px) {
       h1 {
-        font-size: clamp(1.5rem, 12vw, 5rem);
+        font-size: clamp(1.2rem, 12vw, 5rem);
         letter-spacing: -0.03em;
       }
       .countdown {
@@ -139,7 +140,6 @@
   </div>
 
   <script>
-    // Snow animation
     const canvas = document.querySelector('.snow');
     const ctx = canvas.getContext('2d');
     let w, h;
@@ -191,17 +191,15 @@
       requestAnimationFrame(animateSnow);
     }
 
-    window.addEventListener('resize', () => {
-      initSnow();
-    });
+    window.addEventListener('resize', initSnow);
 
     initSnow();
     animateSnow();
 
-    // Countdown with animation on number change
+    // Animate number changes with fade in
     function animateValue(id, newValue) {
       const el = document.getElementById(id);
-      if(el.textContent !== newValue) {
+      if (el.textContent !== newValue) {
         el.style.opacity = 0;
         setTimeout(() => {
           el.textContent = newValue;
@@ -218,7 +216,7 @@
       const diff = christmas - now;
 
       if (diff <= 0) {
-        ['days','hours','minutes','seconds'].forEach(id => animateValue(id, '00'));
+        ['days', 'hours', 'minutes', 'seconds'].forEach(id => animateValue(id, '00'));
         return;
       }
 
