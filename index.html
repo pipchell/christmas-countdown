@@ -25,9 +25,21 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      position: relative;
+    }
+
+    canvas.snow {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
     }
 
     .container {
+      position: relative;
+      z-index: 10;
       text-align: center;
       padding: 0 15px;
       max-width: 700px;
@@ -36,11 +48,11 @@
 
     h1 {
       font-weight: 900;
-      font-size: clamp(2.5rem, 8vw, 6rem);
-      line-height: 1.05;
+      font-size: clamp(3rem, 10vw, 6rem);
+      line-height: 1.1;
       margin-bottom: 1.5rem;
-      text-transform: capitalize;
-      letter-spacing: 0.1em;
+      text-transform: none;
+      letter-spacing: -0.04em; /* reduced spacing */
       color: #17D860;
     }
 
@@ -50,7 +62,6 @@
       gap: clamp(2rem, 4vw, 4rem);
       font-weight: 900;
       font-size: clamp(3rem, 7vw, 5rem);
-      letter-spacing: 0.05em;
       color: #17D860;
       flex-wrap: wrap;
     }
@@ -64,24 +75,34 @@
     }
 
     .countdown div span.value {
-      font-size: 1em; /* full size controlled in .countdown */
+      font-size: 1em; /* scaled by .countdown font-size */
       line-height: 1;
       text-align: center;
+      opacity: 0;
+      animation: fadeInNum 0.5s forwards;
     }
 
     .countdown div span.label {
       font-size: clamp(0.75rem, 2vw, 1.25rem);
       margin-top: 8px;
-      opacity: 0.7;
-      text-transform: uppercase;
+      color: #17D860;
+      text-transform: capitalize; /* only first letter uppercase */
+    }
+
+    @keyframes fadeInNum {
+      from { opacity: 0; transform: translateY(10%); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     @media (max-width: 480px) {
+      h1 {
+        font-size: clamp(2rem, 15vw, 5rem);
+        letter-spacing: -0.03em;
+      }
       .countdown {
         gap: 1.5rem;
         font-size: clamp(2rem, 10vw, 4rem);
       }
-
       .countdown div {
         min-width: 70px;
       }
@@ -89,6 +110,8 @@
   </style>
 </head>
 <body>
+
+  <canvas class="snow"></canvas>
 
   <div class="container">
     <h1>Christmas Countdown</h1>
@@ -113,6 +136,77 @@
   </div>
 
   <script>
+    // Snow animation
+    const canvas = document.querySelector('.snow');
+    const ctx = canvas.getContext('2d');
+    let w, h;
+    let flakes = [];
+
+    function initSnow() {
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+      flakes = [];
+      for (let i = 0; i < 100; i++) {
+        flakes.push({
+          x: Math.random() * w,
+          y: Math.random() * h,
+          r: Math.random() * 4 + 1,
+          d: Math.random() + 1
+        });
+      }
+    }
+
+    function drawFlakes() {
+      ctx.clearRect(0, 0, w, h);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+      ctx.beginPath();
+      for (let i = 0; i < flakes.length; i++) {
+        const f = flakes[i];
+        ctx.moveTo(f.x, f.y);
+        ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+      }
+      ctx.fill();
+      moveFlakes();
+    }
+
+    let angle = 0;
+    function moveFlakes() {
+      angle += 0.01;
+      for (let i = 0; i < flakes.length; i++) {
+        const f = flakes[i];
+        f.y += Math.pow(f.d, 2) + 1;
+        f.x += Math.sin(angle) * 2;
+
+        if (f.y > h) {
+          flakes[i] = { x: Math.random() * w, y: 0, r: f.r, d: f.d };
+        }
+      }
+    }
+
+    function animateSnow() {
+      drawFlakes();
+      requestAnimationFrame(animateSnow);
+    }
+
+    window.addEventListener('resize', () => {
+      initSnow();
+    });
+
+    initSnow();
+    animateSnow();
+
+    // Countdown with animation on number change
+    function animateValue(id, newValue) {
+      const el = document.getElementById(id);
+      if(el.textContent !== newValue) {
+        el.style.opacity = 0;
+        setTimeout(() => {
+          el.textContent = newValue;
+          el.style.animation = 'fadeInNum 0.5s forwards';
+        }, 250);
+      }
+    }
+
     function updateCountdown() {
       const now = new Date();
       let year = now.getFullYear();
@@ -121,10 +215,7 @@
       const diff = christmas - now;
 
       if (diff <= 0) {
-        document.getElementById('days').textContent = "00";
-        document.getElementById('hours').textContent = "00";
-        document.getElementById('minutes').textContent = "00";
-        document.getElementById('seconds').textContent = "00";
+        ['days','hours','minutes','seconds'].forEach(id => animateValue(id, '00'));
         return;
       }
 
@@ -133,10 +224,10 @@
       const hours = Math.floor(diff / (1000 * 60 * 60)) % 24;
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-      document.getElementById('days').textContent = days.toString().padStart(2, '0');
-      document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
-      document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
-      document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+      animateValue('days', days.toString().padStart(2, '0'));
+      animateValue('hours', hours.toString().padStart(2, '0'));
+      animateValue('minutes', minutes.toString().padStart(2, '0'));
+      animateValue('seconds', seconds.toString().padStart(2, '0'));
     }
 
     setInterval(updateCountdown, 1000);
@@ -145,3 +236,4 @@
 
 </body>
 </html>
+
