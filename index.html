@@ -27,6 +27,11 @@
       align-items: center;
       text-align: center;
       position: relative;
+      box-sizing: border-box;
+    }
+
+    *, *:before, *:after {
+      box-sizing: inherit;
     }
 
     canvas.snow {
@@ -51,13 +56,16 @@
 
     h1 {
       font-weight: 900;
-      font-size: clamp(1.5rem, 8vw, 6rem);
+      /* clamp font size but max width and padding prevent overflow */
+      font-size: clamp(2rem, 8vw, 6rem);
       line-height: 1.1;
       margin-bottom: 3rem;
       letter-spacing: -0.04em;
       color: #17D860;
       white-space: nowrap;
-      padding: 0 10px;
+      max-width: 100%;
+      padding: 0 20px;
+      overflow-wrap: normal;
     }
 
     .countdown {
@@ -100,8 +108,9 @@
 
     @media (max-width: 480px) {
       h1 {
-        font-size: clamp(1.2rem, 12vw, 5rem);
+        font-size: clamp(1.5rem, 10vw, 5rem);
         letter-spacing: -0.03em;
+        padding: 0 15px;
       }
       .countdown {
         gap: 1.5rem;
@@ -196,7 +205,6 @@
     initSnow();
     animateSnow();
 
-    // Animate number changes with fade in
     function animateValue(id, newValue) {
       const el = document.getElementById(id);
       if (el.textContent !== newValue) {
