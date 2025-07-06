@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Christmas Countdown</title>
+  <link rel="preload" href="assets/LeagueSpartan-Bold.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/LeagueSpartan-Bold.woff" as="font" type="font/woff" crossorigin>
+  <style>
+    @font-face {
+      font-family: 'League Spartan';
+      src: url('assets/LeagueSpartan-Bold.woff2') format('woff2'),
+           url('assets/LeagueSpartan-Bold.woff') format('woff');
+      font-weight: 900;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: #000;
+      color: #17D860;
+      font-family: 'League Spartan', sans-serif;
+      font-weight: 900;
+      overflow: hidden;
+    }
+
+    .fade-in {
+      animation: fadeIn 2s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .snow {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 10;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 0 15px;
+      gap: 4vh;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 10vw, 6rem);
+      letter-spacing: 0.05em;
+      margin: 0;
+      line-height: 1.1;
+      white-space: nowrap;
+    }
+
+    .countdown {
+      display: flex;
+      justify-content: center;
+      gap: clamp(1rem, 4vw, 3rem);
+      font-size: clamp(1.5rem, 6vw, 3.5rem);
+      flex-wrap: wrap;
+    }
+
+    .countdown div {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 80px;
+    }
+
+    .countdown .value {
+      transition: all 0.3s ease;
+      font-size: 2.5em;
+    }
+
+    .countdown .label {
+      font-size: 0.9em;
+      text-transform: capitalize;
+      color: #17D860;
+      opacity: 0.7;
+    }
+
+    .button-group {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 20;
+    }
+
+    .button-group button {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid #17D860;
+      color: #17D860;
+      padding: 8px 14px;
+      font-family: inherit;
+      font-weight: 900;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    .button-group button:hover {
+      background: #17D860;
+      color: #000;
+    }
+
+    #copy-message {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      background: #17D860;
+      color: #000;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-weight: 900;
+      display: none;
+      z-index: 100;
+    }
+
+    #show-ui {
+      position: fixed;
+      bottom: 5px;
+      right: 5px;
+      color: rgba(255,255,255,0.03);
+      font-size: 12px;
+      cursor: pointer;
+      z-index: 5;
+    }
+  </style>
+</head>
+<body class="fade-in">
+
+  <canvas class="snow"></canvas>
+
+  <div id="copy-message">Link copied! 🎄</div>
+
+  <div class="container">
+    <h1 id="title">Christmas Countdown</h1>
+    <div class="countdown" id="countdown">
+      <div><span class="value" id="days">--</span><span class="label">Days</span></div>
+      <div><span class="value" id="hours">--</span><span class="label">Hours</span></div>
+      <div><span class="value" id="minutes">--</span><span class="label">Minutes</span></div>
+      <div><span class="value" id="seconds">--</span><span class="label">Seconds</span></div>
+    </div>
+  </div>
+
+  <div class="button-group" id="button-group">
+    <button onclick="toggleMusic()">Toggle Music</button>
+    <button onclick="copyLink()">Copy Link</button>
+    <button onclick="hideUI()">Hide UI</button>
+  </div>
+
+  <div id="show-ui" onclick="showUI()">Show</div>
+
+  <audio id="bg-music" loop>
+    <source src="assets/christmas.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    // Snow animation
+    const canvas = document.querySelector('.snow');
+    const ctx = canvas.getContext('2d');
+    let w, h, flakes = [];
+
+    function init() {
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+      flakes = Array.from({length: 100}, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: Math.random() * 4 + 1,
+        d: Math.random() + 1
+      }));
+    }
+
+    function drawFlakes() {
+      ctx.clearRect(0, 0, w, h);
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.beginPath();
+      for (let f of flakes) {
+        ctx.moveTo(f.x, f.y);
+        ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+      }
+      ctx.fill();
+      moveFlakes();
+    }
+
+    function moveFlakes() {
+      for (let f of flakes) {
+        f.y += Math.pow(f.d, 2) + 1;
+        f.x += Math.sin(f.y * 0.01) * 2;
+        if (f.y > h) {
+          f.x = Math.random() * w;
+          f.y = 0;
+        }
+      }
+    }
+
+    function animate() {
+      drawFlakes();
+      requestAnimationFrame(animate);
+    }
+
+    window.addEventListener('resize', init);
+    init();
+    animate();
+
+    // Countdown
+    function updateCountdown() {
+      const now = new Date();
+      const target = new Date(now.getFullYear(), 11, 25);
+      if (now > target) target.setFullYear(target.getFullYear() + 1);
+      const diff = target - now;
+
+      const s = Math.floor(diff / 1000) % 60;
+      const m = Math.floor(diff / 1000 / 60) % 60;
+      const h = Math.floor(diff / 1000 / 60 / 60) % 24;
+      const d = Math.floor(diff / 1000 / 60 / 60 / 24);
+
+      document.getElementById('days').textContent = d.toString().padStart(2, '0');
+      document.getElementById('hours').textContent = h.toString().padStart(2, '0');
+      document.getElementById('minutes').textContent = m.toString().padStart(2, '0');
+      document.getElementById('seconds').textContent = s.toString().padStart(2, '0');
+    }
+
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    // Music toggle
+    function toggleMusic() {
+      const music = document.getElementById('bg-music');
+      if (music.paused) {
+        music.play().catch(() => alert("Autoplay blocked. Tap again."));
+      } else {
+        music.pause();
+      }
+    }
+
+    // Copy link
+    function copyLink() {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        const msg = document.getElementById("copy-message");
+        msg.style.display = "block";
+        setTimeout(() => msg.style.display = "none", 2000);
+      });
+    }
+
+    // Hide/show UI
+    function hideUI() {
+      document.getElementById('button-group').style.display = 'none';
+      document.getElementById('show-ui').style.display = 'block';
+    }
+
+    function showUI() {
+      document.getElementById('button-group').style.display = 'flex';
+      document.getElementById('show-ui').style.display = 'none';
+    }
+  </script>
+</body>
+</html>
