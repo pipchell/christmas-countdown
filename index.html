@@ -23,8 +23,9 @@
       color: #17D860;
       overflow-x: hidden;
       display: flex;
-      justify-content: center;
-      align-items: center;
+      justify-content: center;   /* centers horizontally */
+      align-items: center;       /* centers vertically */
+      text-align: center;        /* centers text inside containers */
       position: relative;
     }
 
@@ -40,21 +41,20 @@
     .container {
       position: relative;
       z-index: 10;
-      text-align: center;
-      padding: 0 15px;
       max-width: 700px;
       width: 100%;
+      padding: 0 15px;
     }
 
     h1 {
       font-weight: 900;
       font-size: clamp(2rem, 8vw, 6rem);
       line-height: 1.1;
-      margin-bottom: 3rem; /* bigger space */
+      margin-bottom: 3rem;
       text-transform: none;
       letter-spacing: -0.04em;
       color: #17D860;
-      white-space: nowrap;       /* prevent wrapping */
+      white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
