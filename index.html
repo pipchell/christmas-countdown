@@ -42,7 +42,7 @@
       font-size: clamp(2.5rem, 8vw, 6rem);
       line-height: 1.05;
       margin: 0 0 1.5rem 0;
-      text-transform: capitalize;  /* <-- changed here */
+      text-transform: capitalize;
       letter-spacing: 0.1em;
       color: #17D860;
     }
@@ -69,13 +69,17 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
+      align-items: center; /* <-- added to center content horizontally */
       text-transform: uppercase;
       user-select: none;
+      box-shadow: 0 0 8px rgba(23, 216, 96, 0.3); /* subtle shadow */
     }
 
     .countdown div span.value {
       font-size: 2.5em;
       line-height: 1;
+      text-align: center; /* center the number */
+      display: block; /* ensure block to center */
     }
 
     .countdown div span.label {
@@ -92,7 +96,7 @@
       }
 
       .countdown div {
-        min-width: 90px;
+        min-width: 80px;
       }
     }
   </style>
