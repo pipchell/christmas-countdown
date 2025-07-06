@@ -4,39 +4,35 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Christmas Countdown</title>
-
-  <!-- Font -->
   <style>
     @font-face {
       font-family: 'League Spartan';
-      src: url('./assets/LeagueSpartan-Bold.woff2') format('woff2'),
-           url('./assets/LeagueSpartan-Bold.woff') format('woff');
+      src: url('assets/LeagueSpartan-Bold.woff2') format('woff2');
       font-weight: 900;
       font-style: normal;
     }
-  </style>
 
-  <style>
-    body, html {
-      margin: 0; padding: 0;
+    html, body {
+      margin: 0;
+      padding: 0;
       height: 100%;
       background-color: #000;
-      font-family: 'League Spartan', sans-serif;
-      font-weight: 900;
       color: #17D860;
+      font-family: 'League Spartan', sans-serif;
       overflow: hidden;
-      animation: fadeIn 1.5s ease-in;
+      animation: fadeIn 1s ease-in;
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
 
-    .snow {
+    canvas.snow {
       position: fixed;
       top: 0; left: 0;
-      width: 100vw; height: 100vh;
+      width: 100%;
+      height: 100%;
       pointer-events: none;
       z-index: 0;
     }
@@ -44,121 +40,113 @@
     .container {
       position: relative;
       z-index: 10;
-      height: 100vh;
+      height: 100%;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      padding: 20px;
       text-align: center;
-      padding: 0 15px;
     }
 
     h1 {
-      font-weight: 900;
-      font-size: clamp(2.5rem, 8vw, 6rem);
-      line-height: 1;
-      margin: 0 0 2.5rem 0;
-      text-transform: capitalize;
-      letter-spacing: 0.05em;
-      color: #17D860;
+      font-size: clamp(2rem, 10vw, 6rem);
       white-space: nowrap;
+      letter-spacing: 0.05em;
+      margin: 0 0 2rem 0;
     }
 
     .countdown {
       display: flex;
+      flex-wrap: wrap;
       justify-content: center;
-      gap: clamp(1rem, 4vw, 3rem);
-      font-weight: 900;
-      font-size: clamp(1.5rem, 5vw, 3rem);
-      letter-spacing: 0.03em;
-      max-width: 800px;
-      width: 100%;
-      color: #17D860;
-      flex-wrap: nowrap;
-      white-space: nowrap;
+      gap: clamp(1rem, 3vw, 2.5rem);
+      font-size: clamp(1rem, 5vw, 3rem);
+      max-width: 90%;
+      text-align: center;
     }
 
     .countdown div {
-      padding: 10px 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      user-select: none;
+      min-width: 80px;
     }
 
-    .countdown div span.value {
-      font-size: 2.5em;
+    .countdown .value {
+      font-size: clamp(2rem, 6vw, 4rem);
       line-height: 1;
-      transition: all 0.3s ease-in-out;
     }
 
-    .countdown div span.label {
-      font-size: 0.75em;
-      margin-top: 4px;
-      opacity: 0.8;
+    .countdown .label {
+      font-size: 0.8em;
       color: #17D860;
       text-transform: capitalize;
+      opacity: 0.8;
     }
 
     .buttons {
       position: fixed;
       bottom: 20px;
-      left: 20px;
-      z-index: 20;
-      display: flex;
-      gap: 10px;
-      flex-direction: column;
-    }
-
-    .bottom-right {
-      position: fixed;
-      bottom: 20px;
       right: 20px;
       z-index: 20;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: opacity 0.3s ease;
+    }
+
+    .buttons.hidden {
+      display: none;
     }
 
     button {
-      background-color: #17D860;
+      background: #17D860;
       border: none;
+      padding: 10px 15px;
+      border-radius: 8px;
       color: black;
       font-weight: bold;
-      font-family: inherit;
-      padding: 10px 14px;
-      border-radius: 8px;
       cursor: pointer;
+      font-family: inherit;
       font-size: 0.9rem;
-      transition: background 0.2s;
+      transition: background 0.3s ease;
     }
 
     button:hover {
-      background-color: #14c356;
+      background: #12b94f;
+    }
+
+    #show-buttons {
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      background: transparent;
+      color: #17D86033;
+      border: none;
+      font-size: 0.8rem;
+      cursor: pointer;
+      z-index: 25;
     }
 
     .copied {
-      margin-top: 5px;
+      position: absolute;
+      bottom: 70px;
+      right: 0;
+      background: #17D860;
+      color: #000;
+      padding: 5px 10px;
+      border-radius: 6px;
       font-size: 0.8rem;
-      color: #ff4242;
-      animation: pop 0.4s ease-in-out;
+      opacity: 0;
+      animation: pop 1.5s forwards;
     }
 
     @keyframes pop {
-      0% { transform: scale(0.8); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    @media (max-width: 480px) {
-      h1 {
-        font-size: clamp(2rem, 9vw, 4rem);
-      }
-
-      .countdown {
-        flex-wrap: wrap;
-        gap: 1rem;
-      }
-
-      .countdown div {
-        min-width: 80px;
-      }
+      0% { opacity: 0; transform: translateY(10px); }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { opacity: 0; transform: translateY(-10px); }
     }
   </style>
 </head>
@@ -169,47 +157,80 @@
   <div class="container">
     <h1>Christmas Countdown</h1>
     <div class="countdown" aria-label="Countdown to Christmas">
-      <div>
-        <span class="value" id="days">--</span>
-        <span class="label">Days</span>
-      </div>
-      <div>
-        <span class="value" id="hours">--</span>
-        <span class="label">Hours</span>
-      </div>
-      <div>
-        <span class="value" id="minutes">--</span>
-        <span class="label">Minutes</span>
-      </div>
-      <div>
-        <span class="value" id="seconds">--</span>
-        <span class="label">Seconds</span>
-      </div>
+      <div><span class="value" id="days">--</span><span class="label">Days</span></div>
+      <div><span class="value" id="hours">--</span><span class="label">Hours</span></div>
+      <div><span class="value" id="minutes">--</span><span class="label">Minutes</span></div>
+      <div><span class="value" id="seconds">--</span><span class="label">Seconds</span></div>
     </div>
   </div>
 
-  <div class="buttons">
-    <button onclick="copyLink()">Copy Link</button>
-    <div id="copiedText" style="display:none;" class="copied">🎄 Link Copied! 🎅</div>
+  <div class="buttons" id="buttons">
+    <button id="music-toggle">🎵 Music</button>
+    <button id="copy-link">📋 Copy Link</button>
+    <div id="copied" class="copied" style="display:none;">🎄 Copied!</div>
+    <button id="hide-buttons">🙈 Hide Buttons</button>
   </div>
 
-  <div class="bottom-right">
-    <button onclick="toggleMusic()">🎵 Music</button>
-  </div>
+  <button id="show-buttons" style="display:none;">👁 Show</button>
 
-  <audio id="bgMusic" loop>
-    <source src="./assets/background.mp3" type="audio/mpeg">
-    Your browser does not support the audio element.
+  <audio id="bg-music" loop>
+    <source src="assets/christmas-music.mp3" type="audio/mpeg" />
   </audio>
 
   <script>
-    // Countdown logic
+    // Snow
+    const canvas = document.querySelector('.snow');
+    const ctx = canvas.getContext('2d');
+    let w, h, flakes = [];
+
+    function initSnow() {
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+      flakes = Array.from({ length: 100 }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: Math.random() * 4 + 1,
+        d: Math.random() + 1
+      }));
+    }
+
+    function drawSnow() {
+      ctx.clearRect(0, 0, w, h);
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.beginPath();
+      flakes.forEach(f => {
+        ctx.moveTo(f.x, f.y);
+        ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2, true);
+      });
+      ctx.fill();
+      moveSnow();
+    }
+
+    let angle = 0;
+    function moveSnow() {
+      angle += 0.01;
+      flakes.forEach(f => {
+        f.y += Math.pow(f.d, 2) + 1;
+        f.x += Math.sin(angle) * 2;
+        if (f.y > h) f.y = 0;
+      });
+    }
+
+    function animateSnow() {
+      drawSnow();
+      requestAnimationFrame(animateSnow);
+    }
+
+    window.addEventListener('resize', initSnow);
+    initSnow();
+    animateSnow();
+
+    // Countdown
     function updateCountdown() {
       const now = new Date();
       let year = now.getFullYear();
-      const christmas = new Date(year, 11, 25, 0, 0, 0);
+      const christmas = new Date(year, 11, 25);
       if (now > christmas) christmas.setFullYear(year + 1);
-
       const diff = christmas - now;
 
       const seconds = Math.floor(diff / 1000) % 60;
@@ -226,81 +247,43 @@
     setInterval(updateCountdown, 1000);
     updateCountdown();
 
-    // Snow animation
-    const canvas = document.querySelector('.snow');
-    const ctx = canvas.getContext('2d');
-    let w, h;
-    let flakes = [];
-
-    function initSnow() {
-      w = canvas.width = window.innerWidth;
-      h = canvas.height = window.innerHeight;
-      flakes = [];
-      for (let i = 0; i < 100; i++) {
-        flakes.push({
-          x: Math.random() * w,
-          y: Math.random() * h,
-          r: Math.random() * 4 + 1,
-          d: Math.random() + 1
-        });
-      }
-    }
-
-    function drawFlakes() {
-      ctx.clearRect(0, 0, w, h);
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-      ctx.beginPath();
-      for (let f of flakes) {
-        ctx.moveTo(f.x, f.y);
-        ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2, true);
-      }
-      ctx.fill();
-      moveFlakes();
-    }
-
-    let angle = 0;
-    function moveFlakes() {
-      angle += 0.01;
-      for (let i = 0; i < flakes.length; i++) {
-        let f = flakes[i];
-        f.y += Math.pow(f.d, 2) + 1;
-        f.x += Math.sin(angle) * 2;
-
-        if (f.y > h) {
-          flakes[i] = { x: Math.random() * w, y: 0, r: f.r, d: f.d };
-        }
-      }
-    }
-
-    function animateSnow() {
-      drawFlakes();
-      requestAnimationFrame(animateSnow);
-    }
-
-    window.addEventListener('resize', initSnow);
-    initSnow();
-    animateSnow();
-
-    // Music control
-    const music = document.getElementById('bgMusic');
-    let isPlaying = false;
-
-    function toggleMusic() {
-      if (isPlaying) {
+    // Music
+    const music = document.getElementById('bg-music');
+    const musicToggle = document.getElementById('music-toggle');
+    let musicPlaying = false;
+    musicToggle.onclick = () => {
+      if (musicPlaying) {
         music.pause();
+        musicPlaying = false;
       } else {
         music.play();
+        musicPlaying = true;
       }
-      isPlaying = !isPlaying;
-    }
+    };
 
     // Copy link
-    function copyLink() {
-      navigator.clipboard.writeText('https://christmas.rpcgroup.xyz');
-      const copied = document.getElementById('copiedText');
-      copied.style.display = 'block';
-      setTimeout(() => copied.style.display = 'none', 2000);
-    }
+    const copyBtn = document.getElementById('copy-link');
+    const copiedText = document.getElementById('copied');
+    copyBtn.onclick = () => {
+      navigator.clipboard.writeText(window.location.href);
+      copiedText.style.display = 'block';
+      setTimeout(() => copiedText.style.display = 'none', 1500);
+    };
+
+    // Hide/show buttons
+    const hideBtn = document.getElementById('hide-buttons');
+    const showBtn = document.getElementById('show-buttons');
+    const buttons = document.getElementById('buttons');
+
+    hideBtn.onclick = () => {
+      buttons.classList.add('hidden');
+      showBtn.style.display = 'block';
+    };
+
+    showBtn.onclick = () => {
+      buttons.classList.remove('hidden');
+      showBtn.style.display = 'none';
+    };
   </script>
 </body>
 </html>
