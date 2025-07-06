@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Christmas Countdown</title>
+  <link rel="icon" href="https://i.ibb.co/0yFj9Sd/Winter-Tree.png" type="image/png">
+  <style>
+    @font-face {
+      font-family: 'LeagueSpartan';
+      src: url('assets/LeagueSpartan-Bold.woff2') format('woff2'),
+           url('assets/LeagueSpartan-Bold.woff') format('woff');
+      font-weight: 900;
+      font-style: normal;
+    }
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: #000;
+      font-family: 'LeagueSpartan', sans-serif;
+      font-weight: 900;
+      color: #17D860;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      transition: background-color 0.3s, color 0.3s;
+      background-size: cover;
+      background-position: center;
+    }
+
+    h1 {
+      font-size: clamp(2.5rem, 10vw, 6rem);
+      letter-spacing: 0.05em;
+      margin: 0 0 2rem;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .countdown {
+      display: flex;
+      gap: clamp(1rem, 3vw, 2rem);
+      font-size: clamp(1.5rem, 5vw, 3rem);
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .time {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 80px;
+    }
+
+    .value {
+      font-size: 1.5em;
+    }
+
+    .label {
+      font-size: 0.7em;
+      text-transform: capitalize;
+      opacity: 0.8;
+    }
+
+    .controls {
+      position: fixed;
+      bottom: 1rem;
+      right: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      z-index: 100;
+    }
+
+    .controls button, .controls input {
+      font-family: 'LeagueSpartan', sans-serif;
+      font-weight: 900;
+      padding: 0.4rem 0.8rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .controls input[type="color"] {
+      width: 2.5rem;
+      height: 2.5rem;
+      padding: 0;
+      border: none;
+      cursor: pointer;
+    }
+
+    .controls input[type="file"] {
+      font-size: 0.85rem;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1 id="title">Christmas Countdown</h1>
+
+  <div class="countdown" aria-label="Countdown to Christmas">
+    <div class="time">
+      <span class="value" id="days">--</span>
+      <span class="label">Days</span>
+    </div>
+    <div class="time">
+      <span class="value" id="hours">--</span>
+      <span class="label">Hours</span>
+    </div>
+    <div class="time">
+      <span class="value" id="minutes">--</span>
+      <span class="label">Minutes</span>
+    </div>
+    <div class="time">
+      <span class="value" id="seconds">--</span>
+      <span class="label">Seconds</span>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button onclick="toggleFullscreen()">Fullscreen</button>
+    <label>
+      Background:
+      <input type="color" id="bg-color" title="Background Color">
+    </label>
+    <label>
+      Text:
+      <input type="color" id="text-color" title="Text Color">
+    </label>
+    <label>
+      Image:
+      <input type="file" id="bg-image" accept="image/*">
+    </label>
+  </div>
+
+  <script>
+    function updateCountdown() {
+      const now = new Date();
+      const year = now.getFullYear();
+      let christmas = new Date(year, 11, 25);
+      if (now > christmas) {
+        christmas = new Date(year + 1, 11, 25);
+      }
+      const diff = christmas - now;
+
+      const seconds = Math.floor(diff / 1000) % 60;
+      const minutes = Math.floor(diff / (1000 * 60)) % 60;
+      const hours = Math.floor(diff / (1000 * 60 * 60)) % 24;
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+      document.getElementById('days').textContent = String(days).padStart(2, '0');
+      document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+      document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+      document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+    }
+
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    const bgColorPicker = document.getElementById('bg-color');
+    const textColorPicker = document.getElementById('text-color');
+    const bgImageInput = document.getElementById('bg-image');
+
+    bgColorPicker.addEventListener('input', (e) => {
+      document.body.style.backgroundImage = '';
+      document.body.style.backgroundColor = e.target.value;
+    });
+
+    textColorPicker.addEventListener('input', (e) => {
+      document.body.style.color = e.target.value;
+    });
+
+    bgImageInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function (event) {
+        document.body.style.backgroundImage = `url('${event.target.result}')`;
+
+        // Auto-set text color depending on image brightness
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = function () {
+          const canvas = document.createElement('canvas');
+          canvas.width = 1;
+          canvas.height = 1;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, 1, 1);
+          const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data;
+          const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+          document.body.style.color = brightness < 128 ? "#FFFFFF" : "#000000";
+        };
+      };
+      reader.readAsDataURL(file);
+    });
+  </script>
+</body>
+</html>
