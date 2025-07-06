@@ -5,36 +5,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Christmas Countdown</title>
 
-  <!-- Load local League Spartan Bold font -->
+  <!-- Font -->
   <style>
     @font-face {
       font-family: 'League Spartan';
-      src: url('assets/LeagueSpartan-Bold.woff2') format('woff2'),
-           url('assets/LeagueSpartan-Bold.woff') format('woff');
+      src: url('./assets/LeagueSpartan-Bold.woff2') format('woff2'),
+           url('./assets/LeagueSpartan-Bold.woff') format('woff');
       font-weight: 900;
       font-style: normal;
     }
+  </style>
 
-    * {
-      box-sizing: border-box;
-    }
-
-    html, body {
-      margin: 0;
-      padding: 0;
+  <style>
+    body, html {
+      margin: 0; padding: 0;
       height: 100%;
       background-color: #000;
       font-family: 'League Spartan', sans-serif;
       font-weight: 900;
       color: #17D860;
-      overflow-x: hidden;
+      overflow: hidden;
+      animation: fadeIn 1.5s ease-in;
     }
 
-    canvas.snow {
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .snow {
       position: fixed;
       top: 0; left: 0;
-      width: 100vw;
-      height: 100vh;
+      width: 100vw; height: 100vh;
       pointer-events: none;
       z-index: 0;
     }
@@ -42,118 +44,189 @@
     .container {
       position: relative;
       z-index: 10;
-      min-height: 100vh;
+      height: 100vh;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       text-align: center;
-      padding: 0 20px;
-    }
-
-    .title-wrapper {
-      width: 100%;
-      max-width: 1200px;
-      overflow: visible;
-      line-height: 1.2;
-      padding-top: 20px;
+      padding: 0 15px;
     }
 
     h1 {
-      font-size: 64px;
-      margin: 0 0 2rem 0;
-      letter-spacing: 0.02em;
+      font-weight: 900;
+      font-size: clamp(2.5rem, 8vw, 6rem);
+      line-height: 1;
+      margin: 0 0 2.5rem 0;
+      text-transform: capitalize;
+      letter-spacing: 0.05em;
+      color: #17D860;
       white-space: nowrap;
-      line-height: 1.2;
-    }
-
-    .countdown-wrapper {
-      width: 100%;
-      max-width: 800px;
-      overflow: visible;
-      margin-top: 1rem;
     }
 
     .countdown {
       display: flex;
       justify-content: center;
-      gap: 2rem;
+      gap: clamp(1rem, 4vw, 3rem);
+      font-weight: 900;
+      font-size: clamp(1.5rem, 5vw, 3rem);
+      letter-spacing: 0.03em;
+      max-width: 800px;
+      width: 100%;
+      color: #17D860;
       flex-wrap: nowrap;
       white-space: nowrap;
-      transition: font-size 0.2s ease;
     }
 
     .countdown div {
+      padding: 10px 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
       user-select: none;
     }
 
-    .countdown .value {
-      font-size: 48px;
-      transition: transform 0.3s ease;
+    .countdown div span.value {
+      font-size: 2.5em;
+      line-height: 1;
+      transition: all 0.3s ease-in-out;
     }
 
-    .countdown .label {
-      font-size: 16px;
-      color: #17D860;
-      opacity: 0.75;
-      text-transform: capitalize;
+    .countdown div span.label {
+      font-size: 0.75em;
       margin-top: 4px;
+      opacity: 0.8;
+      color: #17D860;
+      text-transform: capitalize;
     }
 
-    .countdown .value.animate {
-      transform: scale(1.15);
+    .buttons {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      z-index: 20;
+      display: flex;
+      gap: 10px;
+      flex-direction: column;
+    }
+
+    .bottom-right {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 20;
+    }
+
+    button {
+      background-color: #17D860;
+      border: none;
+      color: black;
+      font-weight: bold;
+      font-family: inherit;
+      padding: 10px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background-color: #14c356;
+    }
+
+    .copied {
+      margin-top: 5px;
+      font-size: 0.8rem;
+      color: #ff4242;
+      animation: pop 0.4s ease-in-out;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
     }
 
     @media (max-width: 480px) {
+      h1 {
+        font-size: clamp(2rem, 9vw, 4rem);
+      }
+
       .countdown {
+        flex-wrap: wrap;
         gap: 1rem;
       }
 
-      .countdown .value {
-        font-size: 36px;
-      }
-
-      .countdown .label {
-        font-size: 14px;
+      .countdown div {
+        min-width: 80px;
       }
     }
   </style>
 </head>
 <body>
+
   <canvas class="snow"></canvas>
 
   <div class="container">
-    <div class="title-wrapper">
-      <h1 id="main-title">Christmas Countdown</h1>
-    </div>
-
-    <div class="countdown-wrapper">
-      <div class="countdown" id="countdown" aria-label="Countdown to Christmas">
-        <div>
-          <span class="value" id="days">--</span>
-          <span class="label">Days</span>
-        </div>
-        <div>
-          <span class="value" id="hours">--</span>
-          <span class="label">Hours</span>
-        </div>
-        <div>
-          <span class="value" id="minutes">--</span>
-          <span class="label">Minutes</span>
-        </div>
-        <div>
-          <span class="value" id="seconds">--</span>
-          <span class="label">Seconds</span>
-        </div>
+    <h1>Christmas Countdown</h1>
+    <div class="countdown" aria-label="Countdown to Christmas">
+      <div>
+        <span class="value" id="days">--</span>
+        <span class="label">Days</span>
+      </div>
+      <div>
+        <span class="value" id="hours">--</span>
+        <span class="label">Hours</span>
+      </div>
+      <div>
+        <span class="value" id="minutes">--</span>
+        <span class="label">Minutes</span>
+      </div>
+      <div>
+        <span class="value" id="seconds">--</span>
+        <span class="label">Seconds</span>
       </div>
     </div>
   </div>
 
+  <div class="buttons">
+    <button onclick="copyLink()">Copy Link</button>
+    <div id="copiedText" style="display:none;" class="copied">🎄 Link Copied! 🎅</div>
+  </div>
+
+  <div class="bottom-right">
+    <button onclick="toggleMusic()">🎵 Music</button>
+  </div>
+
+  <audio id="bgMusic" loop>
+    <source src="./assets/background.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
   <script>
-    // Snow effect
+    // Countdown logic
+    function updateCountdown() {
+      const now = new Date();
+      let year = now.getFullYear();
+      const christmas = new Date(year, 11, 25, 0, 0, 0);
+      if (now > christmas) christmas.setFullYear(year + 1);
+
+      const diff = christmas - now;
+
+      const seconds = Math.floor(diff / 1000) % 60;
+      const minutes = Math.floor(diff / (1000 * 60)) % 60;
+      const hours = Math.floor(diff / (1000 * 60 * 60)) % 24;
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+      document.getElementById('days').textContent = days.toString().padStart(2, '0');
+      document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+      document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+      document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+    }
+
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    // Snow animation
     const canvas = document.querySelector('.snow');
     const ctx = canvas.getContext('2d');
     let w, h;
@@ -188,13 +261,13 @@
     let angle = 0;
     function moveFlakes() {
       angle += 0.01;
-      for (let f of flakes) {
+      for (let i = 0; i < flakes.length; i++) {
+        let f = flakes[i];
         f.y += Math.pow(f.d, 2) + 1;
         f.x += Math.sin(angle) * 2;
 
         if (f.y > h) {
-          f.y = 0;
-          f.x = Math.random() * w;
+          flakes[i] = { x: Math.random() * w, y: 0, r: f.r, d: f.d };
         }
       }
     }
@@ -208,76 +281,26 @@
     initSnow();
     animateSnow();
 
-    // Auto-resize title
-    function fitTitleToContainer() {
-      const title = document.getElementById('main-title');
-      const wrapper = document.querySelector('.title-wrapper');
+    // Music control
+    const music = document.getElementById('bgMusic');
+    let isPlaying = false;
 
-      let fontSize = 64;
-      title.style.fontSize = fontSize + 'px';
-      while (title.scrollWidth > wrapper.clientWidth && fontSize > 24) {
-        fontSize--;
-        title.style.fontSize = fontSize + 'px';
+    function toggleMusic() {
+      if (isPlaying) {
+        music.pause();
+      } else {
+        music.play();
       }
+      isPlaying = !isPlaying;
     }
 
-    // Auto-resize countdown
-    function fitCountdownToContainer() {
-      const wrapper = document.querySelector('.countdown-wrapper');
-      const countdown = document.querySelector('.countdown');
-
-      let fontSize = 48;
-      countdown.style.fontSize = fontSize + 'px';
-
-      while (countdown.scrollWidth > wrapper.clientWidth && fontSize > 20) {
-        fontSize--;
-        countdown.style.fontSize = fontSize + 'px';
-      }
+    // Copy link
+    function copyLink() {
+      navigator.clipboard.writeText('https://christmas.rpcgroup.xyz');
+      const copied = document.getElementById('copiedText');
+      copied.style.display = 'block';
+      setTimeout(() => copied.style.display = 'none', 2000);
     }
-
-    // Countdown logic
-    function updateCountdown() {
-      const now = new Date();
-      let year = now.getFullYear();
-      const christmas = new Date(year, 11, 25);
-
-      if (now > christmas) christmas.setFullYear(year + 1);
-
-      const diff = christmas - now;
-
-      const seconds = Math.floor(diff / 1000) % 60;
-      const minutes = Math.floor(diff / (1000 * 60)) % 60;
-      const hours = Math.floor(diff / (1000 * 60 * 60)) % 24;
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-
-      animateValueChange('days', days);
-      animateValueChange('hours', hours);
-      animateValueChange('minutes', minutes);
-      animateValueChange('seconds', seconds);
-    }
-
-    function animateValueChange(id, newValue) {
-      const el = document.getElementById(id);
-      const current = el.textContent;
-      const valueStr = newValue.toString().padStart(2, '0');
-      if (current !== valueStr) {
-        el.textContent = valueStr;
-        el.classList.add('animate');
-        setTimeout(() => el.classList.remove('animate'), 200);
-      }
-    }
-
-    window.addEventListener('load', () => {
-      fitTitleToContainer();
-      fitCountdownToContainer();
-      updateCountdown();
-      setInterval(updateCountdown, 1000);
-    });
-
-    window.addEventListener('resize', () => {
-      fitTitleToContainer();
-      fitCountdownToContainer();
-    });
   </script>
 </body>
 </html>
