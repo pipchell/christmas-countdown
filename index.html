@@ -16,8 +16,6 @@
       height: 100vh;
       margin: 0;
       text-align: center;
-      position: relative;
-      padding-bottom: 80px; /* space for weather at bottom */
     }
     h1 {
       font-size: 3rem;
@@ -42,28 +40,11 @@
     }
     #weather {
       font-size: 1.5rem;
+      margin-top: 1rem;
       background: rgba(0,0,0,0.3);
       padding: 10px 20px;
       border-radius: 10px;
       min-width: 220px;
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-    /* Settings gear icon styling */
-    #settings {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 40px;
-      height: 40px;
-      cursor: pointer;
-      fill: #17D860;
-      transition: fill 0.3s ease;
-    }
-    #settings:hover {
-      fill: #0fba4f;
     }
   </style>
 </head>
@@ -90,18 +71,13 @@
 
   <div id="weather">Loading weather...</div>
 
-  <!-- Settings gear icon SVG -->
-  <svg id="settings" viewBox="0 0 24 24" role="img" aria-label="Settings" tabindex="0" xmlns="http://www.w3.org/2000/svg">
-    <path d="M19.14 12.94c.04-.3.07-.61.07-.94s-.03-.64-.07-.94l2.03-1.58a.5.5 0 0 0 .11-.64l-1.92-3.32a.5.5 0 0 0-.6-.22l-2.39.96a7.025 7.025 0 0 0-1.62-.94l-.36-2.54A.5.5 0 0 0 14 4h-4a.5.5 0 0 0-.5.43l-.36 2.54c-.58.26-1.12.61-1.62.94l-2.39-.96a.5.5 0 0 0-.6.22L2.68 9.88a.5.5 0 0 0 .11.64l2.03 1.58c-.04.3-.07.61-.07.94s.03.64.07.94l-2.03 1.58a.5.5 0 0 0-.11.64l1.92 3.32a.5.5 0 0 0 .6.22l2.39-.96c.5.33 1.04.68 1.62.94l.36 2.54A.5.5 0 0 0 10 20h4a.5.5 0 0 0 .5-.43l.36-2.54c.58-.26 1.12-.61 1.62-.94l2.39.96a.5.5 0 0 0 .6-.22l1.92-3.32a.5.5 0 0 0-.11-.64l-2.03-1.58zM12 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"/>
-  </svg>
-
   <script>
-    const apiKey = 'YOUR_OPENWEATHERMAP_API_KEY'; // Replace with your key
+    const apiKey = 'YOUR_OPENWEATHERMAP_API_KEY'; // Replace this with your OpenWeatherMap API key
 
-    function calculateCountdown() {
+    function updateCountdown() {
       const now = new Date();
       let currentYear = now.getFullYear();
-      let christmas = new Date(currentYear, 11, 25, 0, 0, 0);
+      let christmas = new Date(currentYear, 11, 25, 0, 0, 0); // Dec 25, midnight local time
 
       if (now > christmas) {
         christmas = new Date(currentYear + 1, 11, 25, 0, 0, 0);
@@ -110,7 +86,11 @@
       let diff = christmas - now;
 
       if (diff <= 0) {
-        return {days:0, hours:0, minutes:0, seconds:0};
+        document.getElementById('days').textContent = '0';
+        document.getElementById('hours').textContent = '0';
+        document.getElementById('minutes').textContent = '0';
+        document.getElementById('seconds').textContent = '0';
+        return;
       }
 
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -121,11 +101,6 @@
       diff -= minutes * (1000 * 60);
       const seconds = Math.floor(diff / 1000);
 
-      return {days, hours, minutes, seconds};
-    }
-
-    function displayCountdown() {
-      const {days, hours, minutes, seconds} = calculateCountdown();
       document.getElementById('days').textContent = days;
       document.getElementById('hours').textContent = hours;
       document.getElementById('minutes').textContent = minutes;
@@ -168,13 +143,11 @@
       );
     }
 
+    // Start countdown & weather on page load
     window.addEventListener('load', () => {
-      displayCountdown();  // Only display once
-      loadLocalWeather();  // Weather on by default
-    });
-
-    document.getElementById('settings').addEventListener('click', () => {
-      alert('Settings clicked! You can add your settings UI here.');
+      updateCountdown();
+      setInterval(updateCountdown, 1000);
+      loadLocalWeather();
     });
   </script>
 </body>
