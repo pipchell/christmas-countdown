@@ -15,11 +15,11 @@
 
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     html, body {
-      margin: 0;
-      padding: 0;
       height: 100%;
       font-family: 'League Spartan', sans-serif;
       font-weight: bold;
@@ -51,39 +51,34 @@
 
     .countdown {
       display: flex;
-      gap: 0.5rem;
-      flex-wrap: nowrap;
+      gap: 1rem;
       justify-content: center;
-      flex-shrink: 0;
       margin-bottom: 1rem;
     }
 
-    .countdown div {
+    .countdown-block {
       display: flex;
       flex-direction: column;
       align-items: center;
-      font-size: clamp(1rem, 4vw, 2rem);
-      min-width: 50px;
+      min-width: 0;
     }
 
     .countdown .value {
-      font-size: 2em;
+      font-size: clamp(1.5rem, 8vw, 3rem);
       line-height: 1;
-      text-align: center;
-      width: 100%;
-      display: inline-block;
       min-width: 2ch;
+      text-align: center;
+      display: inline-block;
     }
 
     .countdown .label {
-      font-size: 0.6em;
+      font-size: clamp(0.6rem, 3vw, 1rem);
       opacity: 0.7;
       color: inherit;
       text-transform: capitalize;
-      height: 1.2em;
-      user-select: none;
-      display: inline-block;
+      margin-top: 0.5rem;
       min-width: 4ch;
+      display: inline-block;
     }
 
     canvas.snow {
@@ -95,16 +90,17 @@
       z-index: 0;
     }
 
+    /* Settings Button */
     #settings-toggle {
       position: fixed;
-      bottom: 15px;
-      right: 15px;
+      bottom: 20px;
+      right: 20px;
       background-color: rgba(0,0,0,0.7);
       color: #17D860;
       border: 2px solid #17D860;
       border-radius: 50%;
-      width: 45px;
-      height: 45px;
+      width: 50px;
+      height: 50px;
       cursor: pointer;
       z-index: 100;
       display: flex;
@@ -117,12 +113,13 @@
 
     #settings-toggle::before {
       content: "⚙";
-      font-size: 20px;
+      font-size: 22px;
       display: flex;
       justify-content: center;
       align-items: center;
       width: 100%;
       height: 100%;
+      transform: translateY(-1px);
     }
 
     #settings-toggle:hover {
@@ -130,17 +127,18 @@
       background-color: rgba(23, 216, 96, 0.2);
     }
 
+    /* Settings Menu */
     #settings-menu {
       position: fixed;
-      bottom: 70px;
-      right: 15px;
+      bottom: 80px;
+      right: 20px;
       background-color: rgba(0,0,0,0.9);
       border: 2px solid #17D860;
       border-radius: 12px;
-      padding: 12px;
+      padding: 15px;
       display: none;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
       z-index: 100;
       max-width: 90vw;
       box-shadow: 0 4px 20px rgba(0,0,0,0.7);
@@ -149,8 +147,8 @@
     .button {
       font-family: 'League Spartan', sans-serif;
       font-weight: bold;
-      padding: 8px 12px;
-      font-size: 0.9rem;
+      padding: 10px 15px;
+      font-size: 1rem;
       color: #17D860;
       background-color: rgba(0,0,0,0.6);
       border: 2px solid #17D860;
@@ -174,6 +172,7 @@
       background-color: rgba(23, 216, 96, 0.4);
     }
 
+    /* Color Picker */
     #color-picker {
       position: fixed;
       top: 50%;
@@ -182,12 +181,12 @@
       background-color: rgba(0,0,0,0.95);
       border: 2px solid #17D860;
       border-radius: 12px;
-      padding: 15px;
+      padding: 20px;
       z-index: 1000;
       display: none;
       flex-direction: column;
       gap: 15px;
-      width: 260px;
+      width: 300px;
       max-width: 90vw;
       box-shadow: 0 4px 30px rgba(0,0,0,0.8);
     }
@@ -200,42 +199,25 @@
 
     #color-input {
       width: 100%;
-      height: 40px;
+      height: 50px;
       cursor: pointer;
     }
 
-    #copy-msg {
-      position: absolute;
-      top: 15px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #17D860;
-      color: black;
-      padding: 8px 16px;
-      border-radius: 8px;
-      display: none;
-      font-size: 0.9rem;
-      font-weight: bold;
-      z-index: 999;
-      user-select: none;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-    }
-
-    /* Weather widget styles */
+    /* Weather Widget */
     #weather-widget {
       position: fixed;
-      bottom: 15px;
+      bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
       background-color: rgba(0, 0, 0, 0.7);
       border: 2px solid #17D860;
       border-radius: 12px;
-      padding: 8px 12px;
+      padding: 10px 15px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 12px;
       z-index: 50;
-      font-size: 0.8rem;
+      font-size: 0.9rem;
       color: #17D860;
       max-width: 95vw;
       box-shadow: 0 2px 10px rgba(0,0,0,0.3);
@@ -243,15 +225,15 @@
 
     #weather-temp {
       font-weight: bold;
-      font-size: 0.9rem;
-      min-width: 40px;
+      font-size: 1.1rem;
+      min-width: 45px;
       text-align: center;
     }
 
     #weather-location {
       opacity: 0.9;
-      font-size: 0.75rem;
-      min-width: 80px;
+      font-size: 0.85rem;
+      min-width: 100px;
       overflow: hidden;
       text-overflow: ellipsis;
       text-align: center;
@@ -259,14 +241,14 @@
 
     #weather-description {
       text-transform: capitalize;
-      min-width: 70px;
+      min-width: 90px;
       overflow: hidden;
       text-overflow: ellipsis;
       text-align: center;
-      font-size: 0.75rem;
+      font-size: 0.85rem;
     }
 
-    /* File upload button */
+    /* File Upload Button */
     .file-upload-wrapper {
       position: relative;
       width: 100%;
@@ -287,31 +269,56 @@
       cursor: pointer;
     }
 
-    @media (max-width: 400px) {
+    /* Responsive Adjustments */
+    @media (min-width: 768px) {
       .countdown {
-        gap: 0.4rem;
+        gap: 1.5rem;
       }
       
-      .countdown div {
-        min-width: 45px;
+      #color-picker {
+        width: 350px;
+        padding: 25px;
+      }
+      
+      #color-input {
+        height: 60px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .countdown {
+        gap: 0.7rem;
       }
       
       #settings-menu {
-        bottom: 65px;
-        right: 10px;
-        padding: 10px;
+        bottom: 75px;
+        right: 15px;
+        padding: 12px;
       }
       
       #weather-widget {
         flex-direction: column;
-        gap: 4px;
-        padding: 6px 10px;
+        gap: 5px;
+        padding: 8px 12px;
       }
       
       #weather-temp, #weather-description, #weather-location {
-        font-size: 0.7rem;
-        min-width: auto;
+        font-size: 0.8rem;
         width: 100%;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .countdown {
+        gap: 0.5rem;
+      }
+      
+      h1 {
+        font-size: 1.3rem;
+      }
+      
+      .countdown .value {
+        font-size: 1.2rem;
       }
     }
   </style>
@@ -322,10 +329,22 @@
 <div class="container">
   <h1>Christmas Countdown</h1>
   <div class="countdown" aria-live="polite" aria-atomic="true">
-    <div><span class="value" id="days">--</span><span class="label">days</span></div>
-    <div><span class="value" id="hours">--</span><span class="label">hours</span></div>
-    <div><span class="value" id="minutes">--</span><span class="label">minutes</span></div>
-    <div><span class="value" id="seconds">--</span><span class="label">seconds</span></div>
+    <div class="countdown-block">
+      <span class="value" id="days">--</span>
+      <span class="label">days</span>
+    </div>
+    <div class="countdown-block">
+      <span class="value" id="hours">--</span>
+      <span class="label">hours</span>
+    </div>
+    <div class="countdown-block">
+      <span class="value" id="minutes">--</span>
+      <span class="label">minutes</span>
+    </div>
+    <div class="countdown-block">
+      <span class="value" id="seconds">--</span>
+      <span class="label">seconds</span>
+    </div>
   </div>
 </div>
 
@@ -344,8 +363,6 @@
     <button class="button" id="color-cancel">Cancel</button>
   </div>
 </div>
-
-<div id="copy-msg">Link Copied!</div>
 
 <button id="settings-toggle"></button>
 
@@ -368,7 +385,6 @@
   const countdown = document.querySelector('.countdown');
   const snowCanvas = document.querySelector('.snow');
   const ctx = snowCanvas.getContext('2d');
-  const copyMsg = document.getElementById('copy-msg');
   const settingsMenu = document.getElementById('settings-menu');
   const settingsToggle = document.getElementById('settings-toggle');
   const weatherWidget = document.getElementById('weather-widget');
@@ -378,12 +394,10 @@
   const colorInput = document.getElementById('color-input');
   const colorApply = document.getElementById('color-apply');
   const colorCancel = document.getElementById('color-cancel');
-  const bgUpload = document.getElementById('bg-upload');
 
   // State
   let w, h, flakes = [];
   let countdownEnded = false;
-  let resetTimeout = null;
   let mouseMoveTimer;
   let weatherEnabled = true;
   let autoHideEnabled = true;
@@ -404,13 +418,12 @@
   }
 
   function loadPreferences() {
-    // Load weather preference (default: on)
+    // Load preferences from localStorage
     const savedWeatherPref = localStorage.getItem('weatherEnabled');
     weatherEnabled = savedWeatherPref !== null ? savedWeatherPref === 'true' : true;
     weatherToggleBtn.classList.toggle('active', weatherEnabled);
     if (weatherEnabled) fetchWeather();
     
-    // Load auto-hide preference (default: on)
     const savedAutoHidePref = localStorage.getItem('autoHideEnabled');
     autoHideEnabled = savedAutoHidePref !== null ? savedAutoHidePref === 'true' : true;
     autohideToggleBtn.classList.toggle('active', autoHideEnabled);
@@ -434,7 +447,6 @@
   }
 
   function handleMouseActivity(e) {
-    // Don't hide if interacting with settings
     if (e.target.closest('#settings-menu') || e.target.closest('#settings-toggle')) return;
     
     settingsToggle.style.opacity = '1';
@@ -461,11 +473,7 @@
   }
 
   function toggleSettingsMenu() {
-    if (settingsMenu.style.display === 'flex') {
-      settingsMenu.style.display = 'none';
-    } else {
-      settingsMenu.style.display = 'flex';
-    }
+    settingsMenu.style.display = settingsMenu.style.display === 'flex' ? 'none' : 'flex';
     handleMouseActivity({target: {closest: () => false}});
   }
 
@@ -521,9 +529,7 @@
     if (diff <= 0 && !countdownEnded) {
       countdownEnded = true;
       showConfetti();
-      setTimeout(() => {
-        location.reload(); // Auto-restart when countdown completes
-      }, 5000);
+      setTimeout(() => location.reload(), 5000);
       return;
     }
 
@@ -574,12 +580,7 @@
     weatherEnabled = !weatherEnabled;
     weatherToggleBtn.classList.toggle('active', weatherEnabled);
     localStorage.setItem('weatherEnabled', weatherEnabled);
-    
-    if (weatherEnabled) {
-      fetchWeather();
-    } else {
-      weatherWidget.style.display = 'none';
-    }
+    weatherEnabled ? fetchWeather() : (weatherWidget.style.display = 'none');
   }
 
   function toggleAutoHide() {
@@ -587,7 +588,6 @@
     autohideToggleBtn.classList.toggle('active', autoHideEnabled);
     localStorage.setItem('autoHideEnabled', autoHideEnabled);
     
-    // Reset event listeners
     document.removeEventListener('mousemove', handleMouseActivity);
     document.removeEventListener('click', handleMouseActivity);
     document.removeEventListener('scroll', handleMouseActivity);
@@ -601,7 +601,7 @@
   }
 
   function toggleSnow() {
-    snowCanvas.style.display = (snowCanvas.style.display === 'none') ? 'block' : 'none';
+    snowCanvas.style.display = snowCanvas.style.display === 'none' ? 'block' : 'none';
   }
 
   function toggleFullscreen(btn) {
@@ -616,11 +616,7 @@
 
   function showColorPicker(type) {
     currentColorType = type;
-    if (type === 'background') {
-      colorInput.value = '#000000';
-    } else {
-      colorInput.value = '#17D860';
-    }
+    colorInput.value = type === 'background' ? '#000000' : '#17D860';
     colorPicker.style.display = 'flex';
   }
 
@@ -651,10 +647,7 @@
   }
 
   function copyLink() {
-    navigator.clipboard.writeText(location.href).then(() => {
-      copyMsg.style.display = 'block';
-      setTimeout(() => copyMsg.style.display = 'none', 2000);
-    });
+    navigator.clipboard.writeText(location.href);
   }
 
   function showConfetti() {
