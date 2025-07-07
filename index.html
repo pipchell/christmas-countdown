@@ -4,8 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Christmas Countdown</title>
-  <!-- Use local logo.png as favicon -->
-  <link rel="icon" href="logo.png" type="image/png" />
+  <link rel="icon" href="https://i.ibb.co/0yFj9Sd/browser-icon.png" type="image/png" />
   <style>
     @font-face {
       font-family: 'League Spartan';
@@ -64,10 +63,15 @@
       align-items: center;
       font-size: clamp(1.5rem, 5vw, 3rem);
       transition: all 0.3s ease;
+      min-width: 70px; /* keep boxes consistent */
     }
 
     .countdown .value {
       font-size: 2.5em;
+      line-height: 1;
+      /* Center horizontally */
+      text-align: center;
+      width: 100%;
     }
 
     .countdown .label {
@@ -75,6 +79,9 @@
       opacity: 0.7;
       color: inherit;
       text-transform: capitalize;
+      /* Keep labels stable, no shifting */
+      height: 1.2em;
+      user-select: none;
     }
 
     canvas.snow {
@@ -86,95 +93,86 @@
       z-index: 0;
     }
 
-    /* Settings Toggle Button (Gear Icon) */
     #settings-toggle, #show-buttons {
       position: fixed;
       bottom: 15px;
       right: 15px;
       font-family: 'League Spartan', sans-serif;
       font-weight: bold;
-      font-size: 1.5rem;
+      font-size: 1.2rem;
       background-color: rgba(0,0,0,0.6);
       color: #17D860;
       border: 2px solid #17D860;
       border-radius: 50%;
-      width: 48px;
-      height: 48px;
+      width: 50px;
+      height: 50px;
       cursor: pointer;
       z-index: 100;
       display: flex;
       justify-content: center;
       align-items: center;
-      transition: background-color 0.3s ease, color 0.3s ease;
+      transition: opacity 0.5s ease;
       user-select: none;
     }
 
-    #settings-toggle:hover, #show-buttons:hover {
-      background-color: #17D860;
-      color: #000;
-    }
-
     #show-buttons {
-      font-size: 1.2rem;
       display: none;
-      opacity: 0.6;
+      font-size: 1.4rem;
+      opacity: 0.15;
+      font-weight: normal;
+      line-height: 0;
+      padding-bottom: 2px;
     }
 
-    /* Settings Menu */
     #settings-menu {
       position: fixed;
       bottom: 75px;
       right: 15px;
-      background-color: rgba(0,0,0,0.9);
+      background-color: rgba(0,0,0,0.85);
       border: 2px solid #17D860;
-      border-radius: 16px;
-      padding: 20px;
+      border-radius: 12px;
+      padding: 15px;
       display: none;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
       z-index: 100;
-      width: 220px;
-      box-shadow: 0 4px 15px rgba(23, 216, 96, 0.4);
-      backdrop-filter: saturate(180%) blur(10px);
-      transition: opacity 0.3s ease;
+      opacity: 1;
+      transition: opacity 0.5s ease;
     }
 
-    /* Buttons inside settings */
     .button {
       font-family: 'League Spartan', sans-serif;
       font-weight: bold;
-      padding: 10px 14px;
+      padding: 8px 12px;
       font-size: 1rem;
       color: #17D860;
       background-color: rgba(0,0,0,0.5);
       border: 2px solid #17D860;
-      border-radius: 8px;
+      border-radius: 6px;
       cursor: pointer;
       width: 100%;
-      text-align: center;
       user-select: none;
-      transition: background-color 0.25s ease;
+      transition: background-color 0.3s ease;
     }
 
     .button:hover {
-      background-color: rgba(23, 216, 96, 0.3);
+      background-color: rgba(23, 216, 96, 0.2);
     }
 
-    /* Inputs inside labels */
     input[type="color"] {
       width: 100%;
-      height: 2.4rem;
+      height: 2rem;
       border: none;
       cursor: pointer;
-      border-radius: 6px;
-      margin-top: 6px;
+      padding: 0;
+      margin: 0;
+      background: transparent;
     }
 
     input[type="file"] {
       display: none;
     }
 
-    /* Copy message styling */
     #copy-msg {
       position: absolute;
       top: 10px;
@@ -189,7 +187,13 @@
       font-weight: bold;
       z-index: 999;
       user-select: none;
-      box-shadow: 0 0 10px #17D860;
+    }
+
+    /* Fade out classes for hiding buttons */
+    .fade-out {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
     }
   </style>
 </head>
@@ -198,32 +202,31 @@
 <canvas class="snow"></canvas>
 <div class="container">
   <h1>Christmas Countdown</h1>
-  <div class="countdown">
-    <div><span class="value" id="days">--</span><span class="label">Days</span></div>
-    <div><span class="value" id="hours">--</span><span class="label">Hours</span></div>
-    <div><span class="value" id="minutes">--</span><span class="label">Minutes</span></div>
-    <div><span class="value" id="seconds">--</span><span class="label">Seconds</span></div>
+  <div class="countdown" aria-live="polite" aria-atomic="true">
+    <div><span class="value" id="days">--</span><span class="label">days</span></div>
+    <div><span class="value" id="hours">--</span><span class="label">hours</span></div>
+    <div><span class="value" id="minutes">--</span><span class="label">minutes</span></div>
+    <div><span class="value" id="seconds">--</span><span class="label">seconds</span></div>
   </div>
 </div>
 
-<div id="copy-msg">🎄 Link Copied! 🎅</div>
+<div id="copy-msg">Link Copied!</div>
 
-<button id="settings-toggle" aria-label="Toggle Settings Menu">⚙️</button>
-<button id="show-buttons" aria-label="Show Settings Buttons">⋯</button>
+<button id="settings-toggle" aria-label="Settings">
+  <svg width="24" height="24" fill="#17D860" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    <path d="M19.43 12.98c.04-.32.07-.66.07-1s-.03-.68-.07-1l2.11-1.65a.5.5 0 0 0 .11-.64l-2-3.46a.5.5 0 0 0-.6-.22l-2.49 1a7.07 7.07 0 0 0-1.7-.99l-.38-2.65A.5.5 0 0 0 14 3h-4a.5.5 0 0 0-.5.43l-.38 2.65a7.07 7.07 0 0 0-1.7.99l-2.49-1a.5.5 0 0 0-.6.22l-2 3.46a.5.5 0 0 0 .11.64l2.11 1.65c-.04.32-.07.66-.07 1s.03.68.07 1L2.1 14.63a.5.5 0 0 0-.11.64l2 3.46a.5.5 0 0 0 .6.22l2.49-1c.5.38 1.04.68 1.7.99l.38 2.65A.5.5 0 0 0 10 21h4a.5.5 0 0 0 .5-.43l.38-2.65c.66-.3 1.2-.61 1.7-.99l2.49 1a.5.5 0 0 0 .6-.22l2-3.46a.5.5 0 0 0-.11-.64l-2.13-1.65zM12 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"/>
+  </svg>
+</button>
 
-<div id="settings-menu" role="menu" aria-hidden="true">
+<button id="show-buttons" aria-label="Show Buttons">⋯</button>
+
+<div id="settings-menu" role="region" aria-label="Settings Menu">
   <button class="button" onclick="toggleSnow()">Toggle Snow</button>
   <button class="button" onclick="toggleFullscreen(this)">Fullscreen</button>
-  <label class="button" style="cursor:default;">
-    Background Color
-    <input type="color" onchange="changeBgColor(this.value)" aria-label="Select Background Color" />
-  </label>
-  <label class="button" style="cursor:default;">
-    Text Color
-    <input type="color" onchange="changeTextColor(this.value)" aria-label="Select Text Color" />
-  </label>
+  <label class="button"><input type="color" onchange="changeBgColor(this.value)"> Background Color</label>
+  <label class="button"><input type="color" onchange="changeTextColor(this.value)"> Text Color</label>
   <label class="button" onclick="document.getElementById('bg-upload').click()">Upload Background</label>
-  <input type="file" id="bg-upload" accept="image/*" onchange="handleImageUpload(event)" aria-label="Upload Background Image" />
+  <input type="file" id="bg-upload" accept="image/*" onchange="handleImageUpload(event)">
   <button class="button" onclick="copyLink()">Copy Link</button>
   <button class="button" onclick="hideSettings()">Hide Buttons</button>
 </div>
@@ -233,7 +236,13 @@
   const snowCanvas = document.querySelector('.snow');
   const ctx = snowCanvas.getContext('2d');
   const copyMsg = document.getElementById('copy-msg');
+  const settingsMenu = document.getElementById('settings-menu');
+  const settingsToggle = document.getElementById('settings-toggle');
+  const showButtonsBtn = document.getElementById('show-buttons');
+
   let w, h, flakes = [];
+  let countdownEnded = false;
+  let resetTimeout = null;
 
   function initSnow() {
     w = snowCanvas.width = window.innerWidth;
@@ -280,35 +289,42 @@
   function updateCountdown() {
     const now = new Date();
     let year = now.getFullYear();
-    const xmas = new Date(year, 11, 25);
+    let xmas = new Date(year, 11, 25);
     if (now > xmas) xmas.setFullYear(year + 1);
     const diff = xmas - now;
 
-    if (diff <= 0) {
+    if (diff <= 0 && !countdownEnded) {
+      countdownEnded = true;
       showConfetti();
+
+      // Wait 5 minutes before resetting countdown to next year
+      resetTimeout = setTimeout(() => {
+        countdownEnded = false;
+        updateCountdown();
+      }, 5 * 60 * 1000); // 5 minutes in ms
+
       return;
     }
 
-    const secs = Math.floor(diff / 1000) % 60;
-    const mins = Math.floor(diff / (1000 * 60)) % 60;
-    const hrs = Math.floor(diff / (1000 * 60 * 60)) % 24;
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    if (!countdownEnded) {
+      const secs = Math.floor(diff / 1000) % 60;
+      const mins = Math.floor(diff / (1000 * 60)) % 60;
+      const hrs = Math.floor(diff / (1000 * 60 * 60)) % 24;
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-    document.getElementById('days').textContent = days;
-    document.getElementById('hours').textContent = hrs;
-    document.getElementById('minutes').textContent = mins;
-    document.getElementById('seconds').textContent = secs;
+      document.getElementById('days').textContent = days;
+      document.getElementById('hours').textContent = hrs.toString().padStart(2, '0');
+      document.getElementById('minutes').textContent = mins.toString().padStart(2, '0');
+      document.getElementById('seconds').textContent = secs.toString().padStart(2, '0');
+    }
   }
 
   setInterval(updateCountdown, 1000);
   updateCountdown();
   window.addEventListener('resize', () => {
     initSnow();
-    // redraw immediately to avoid blank canvas on resize
-    drawSnow();
   });
-  initSnow();
-  animateSnow();
+  initSnow(); animateSnow();
 
   function toggleSnow() {
     snowCanvas.style.display = (snowCanvas.style.display === 'none') ? 'block' : 'none';
@@ -339,7 +355,7 @@
       document.body.style.backgroundSize = 'cover';
       document.body.style.backgroundPosition = 'center';
       document.body.style.backgroundRepeat = 'no-repeat';
-      document.body.style.color = '#fff'; // auto-adjust for readability
+      document.body.style.color = '#fff'; // auto-adjust
     };
     reader.readAsDataURL(e.target.files[0]);
   }
@@ -352,31 +368,60 @@
   }
 
   function hideSettings() {
-    document.getElementById('settings-menu').style.display = 'none';
-    document.getElementById('settings-toggle').style.display = 'none';
-    document.getElementById('show-buttons').style.display = 'flex';
+    // Fade out menu and settings button
+    settingsMenu.classList.add('fade-out');
+    settingsToggle.classList.add('fade-out');
+    // After transition, hide them completely and show the small show button
+    setTimeout(() => {
+      settingsMenu.style.display = 'none';
+      settingsToggle.style.display = 'none';
+      settingsMenu.classList.remove('fade-out');
+      settingsToggle.classList.remove('fade-out');
+      showButtonsBtn.style.display = 'flex';
+      showButtonsBtn.style.opacity = '0';
+      // fade in show button
+      setTimeout(() => {
+        showButtonsBtn.style.opacity = '0.15';
+      }, 20);
+    }, 500);
   }
 
-  document.getElementById('show-buttons').onclick = () => {
-    document.getElementById('settings-menu').style.display = 'flex';
-    document.getElementById('settings-toggle').style.display = 'flex';
-    document.getElementById('show-buttons').style.display = 'none';
+  showButtonsBtn.onclick = () => {
+    showButtonsBtn.style.opacity = '0';
+    // fade out
+    setTimeout(() => {
+      showButtonsBtn.style.display = 'none';
+      settingsMenu.style.display = 'flex';
+      settingsToggle.style.display = 'flex';
+      settingsMenu.style.opacity = '0';
+      settingsToggle.style.opacity = '0';
+      // fade in
+      setTimeout(() => {
+        settingsMenu.style.opacity = '1';
+        settingsToggle.style.opacity = '1';
+      }, 20);
+    }, 300);
   };
 
-  document.getElementById('settings-toggle').onclick = () => {
-    const menu = document.getElementById('settings-menu');
-    if (menu.style.display === 'none' || menu.style.display === '') {
-      menu.style.display = 'flex';
-      menu.setAttribute('aria-hidden', 'false');
+  settingsToggle.onclick = () => {
+    if (settingsMenu.style.display === 'flex' || settingsMenu.style.display === '') {
+      settingsMenu.style.opacity = '0';
+      setTimeout(() => {
+        settingsMenu.style.display = 'none';
+      }, 500);
     } else {
-      menu.style.display = 'none';
-      menu.setAttribute('aria-hidden', 'true');
+      settingsMenu.style.display = 'flex';
+      settingsMenu.style.opacity = '0';
+      setTimeout(() => {
+        settingsMenu.style.opacity = '1';
+      }, 20);
     }
   };
 
   function showConfetti() {
-    // Placeholder - you can add a confetti lib like Canvas Confetti
-    alert("🎉 Merry Christmas! 🎄");
+    // Replace alert with a subtle confetti animation or message (left as a stub)
+    // You can integrate a confetti library here if desired.
+    console.log("Countdown complete! 🎉");
   }
 </script>
 </body>
