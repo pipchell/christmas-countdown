@@ -39,8 +39,6 @@
       align-items: center;
       text-align: center;
       padding: 0 15px;
-      /* Added space for weather at bottom */
-      padding-bottom: 3rem;
     }
 
     h1 {
@@ -48,6 +46,7 @@
       margin-bottom: 3rem;
       letter-spacing: 0.02em;
       white-space: nowrap;
+      /* prevent moving text */
       position: relative;
     }
 
@@ -58,7 +57,7 @@
       justify-content: center;
       flex-shrink: 0;
       margin-bottom: 2rem;
-      position: relative;
+      position: relative; /* prevent movement */
     }
 
     .countdown div {
@@ -66,7 +65,7 @@
       flex-direction: column;
       align-items: center;
       font-size: clamp(1.5rem, 5vw, 3rem);
-      transition: none;
+      transition: none; /* remove transition to prevent movement */
       min-width: 70px;
     }
 
@@ -86,17 +85,14 @@
       user-select: none;
     }
 
-    /* Weather container moved down */
+    /* Weather container */
     #weather {
-      position: absolute;
-      bottom: 15px;
-      left: 50%;
-      transform: translateX(-50%);
+      position: relative;
       color: #17D860;
       font-size: clamp(1rem, 4vw, 1.5rem);
+      margin-top: 1rem;
       user-select: none;
-      min-height: 1.5em;
-      white-space: nowrap;
+      min-height: 1.5em; /* keep space reserved */
     }
 
     canvas.snow {
@@ -204,6 +200,7 @@
       user-select: none;
     }
 
+    /* Fade out classes for hiding buttons */
     .fade-out {
       opacity: 0;
       pointer-events: none;
@@ -236,4 +233,257 @@
 <button id="show-buttons" aria-label="Show Buttons">⋯</button>
 
 <div id="settings-menu" role="region" aria-label="Settings Menu">
-  <button class="button
+  <button class="button" onclick="toggleSnow()">Toggle Snow</button>
+  <button class="button" onclick="toggleFullscreen(this)">Fullscreen</button>
+  <label class="button"><input type="color" onchange="changeBgColor(this.value)"> Background Color</label>
+  <label class="button"><input type="color" onchange="changeTextColor(this.value)"> Text Color</label>
+  <label class="button" onclick="document.getElementById('bg-upload').click()">Upload Background</label>
+  <input type="file" id="bg-upload" accept="image/*" onchange="handleImageUpload(event)">
+  <button class="button" onclick="copyLink()">Copy Link</button>
+  <label class="button" style="cursor:pointer;">
+    <input type="checkbox" id="weather-toggle" onchange="toggleWeather()" style="margin-right:8px;vertical-align:middle;">
+    Show Weather
+  </label>
+  <button class="button" onclick="hideSettings()">Hide Buttons</button>
+</div>
+
+<script>
+  const countdown = document.querySelector('.countdown');
+  const snowCanvas = document.querySelector('.snow');
+  const ctx = snowCanvas.getContext('2d');
+  const copyMsg = document.getElementById('copy-msg');
+  const settingsMenu = document.getElementById('settings-menu');
+  const settingsToggle = document.getElementById('settings-toggle');
+  const showButtonsBtn = document.getElementById('show-buttons');
+  const weatherDiv = document.getElementById('weather');
+  const weatherToggleCheckbox = document.getElementById('weather-toggle');
+
+  let w, h, flakes = [];
+  let countdownEnded = false;
+  let resetTimeout = null;
+
+  // --- Snow setup ---
+  function initSnow() {
+    w = snowCanvas.width = window.innerWidth;
+    h = snowCanvas.height = window.innerHeight;
+    flakes = [];
+    for (let i = 0; i < 100; i++) {
+      flakes.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: Math.random() * 4 + 1,
+        d: Math.random() * 100
+      });
+    }
+  }
+
+  function drawSnow() {
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = 'white';
+    ctx.beginPath();
+    for (let i = 0; i < flakes.length; i++) {
+      let f = flakes[i];
+      ctx.moveTo(f.x, f.y);
+      ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2, true);
+    }
+    ctx.fill();
+    updateSnow();
+  }
+
+  let angle = 0;
+  function updateSnow() {
+    angle += 0.01;
+    for (let i = 0; i < flakes.length; i++) {
+      let f = flakes[i];
+      f.y += Math.cos(angle + f.d) + 1 + f.r / 2;
+      f.x += Math.sin(angle) * 2;
+      if (f.x > w + 5 || f.x < -5 || f.y > h) {
+        flakes[i] = {x: Math.random() * w, y: -10, r: f.r, d: f.d};
+      }
+    }
+  }
+
+  let snowRunning = true;
+  function snowLoop() {
+    if (snowRunning) {
+      drawSnow();
+    } else {
+      ctx.clearRect(0, 0, w, h);
+    }
+    requestAnimationFrame(snowLoop);
+  }
+
+  // --- Countdown ---
+  function updateCountdown() {
+    const now = new Date();
+    let currentYear = now.getFullYear();
+    let christmas = new Date(currentYear, 11, 25, 0, 0, 0);
+
+    if (now > christmas) {
+      christmas = new Date(currentYear + 1, 11, 25, 0, 0, 0);
+    }
+
+    const diff = christmas - now;
+
+    if (diff <= 0) {
+      if (!countdownEnded) {
+        countdownEnded = true;
+        confettiExplosion();
+        // Reset countdown automatically after 5 seconds
+        if (resetTimeout) clearTimeout(resetTimeout);
+        resetTimeout = setTimeout(() => {
+          countdownEnded = false;
+          updateCountdown();
+        }, 5000);
+      }
+      document.getElementById('days').textContent = 0;
+      document.getElementById('hours').textContent = 0;
+      document.getElementById('minutes').textContent = 0;
+      document.getElementById('seconds').textContent = 0;
+      return;
+    }
+
+    countdownEnded = false;
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const minutes = Math.floor((diff / (1000 * 60)) % 60);
+    const seconds = Math.floor((diff / 1000) % 60);
+
+    document.getElementById('days').textContent = days;
+    document.getElementById('hours').textContent = hours;
+    document.getElementById('minutes').textContent = minutes;
+    document.getElementById('seconds').textContent = seconds;
+  }
+
+  // --- Confetti ---
+  function confettiExplosion() {
+    // Could add confetti here but skipping for now for simplicity
+  }
+
+  // --- Background and Text Color ---
+  function changeBgColor(color) {
+    document.body.style.backgroundColor = color;
+  }
+
+  function changeTextColor(color) {
+    document.body.style.color = color;
+  }
+
+  // --- Background Upload ---
+  function handleImageUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      document.body.style.backgroundImage = `url(${e.target.result})`;
+      document.body.style.backgroundSize = 'cover';
+      document.body.style.backgroundRepeat = 'no-repeat';
+      document.body.style.backgroundPosition = 'center';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // --- Copy Link ---
+  function copyLink() {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      copyMsg.style.display = 'block';
+      setTimeout(() => copyMsg.style.display = 'none', 1500);
+    });
+  }
+
+  // --- Fullscreen Toggle ---
+  function toggleFullscreen(button) {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+      button.textContent = 'Minimise';
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+        button.textContent = 'Fullscreen';
+      }
+    }
+  }
+
+  // --- Snow Toggle ---
+  function toggleSnow() {
+    snowRunning = !snowRunning;
+  }
+
+  // --- Show/Hide Settings Menu ---
+  settingsToggle.addEventListener('click', () => {
+    if (settingsMenu.style.display === 'flex') {
+      settingsMenu.style.display = 'none';
+      showButtonsBtn.style.display = 'block';
+    } else {
+      settingsMenu.style.display = 'flex';
+      showButtonsBtn.style.display = 'none';
+    }
+  });
+
+  showButtonsBtn.addEventListener('click', () => {
+    settingsMenu.style.display = 'flex';
+    showButtonsBtn.style.display = 'none';
+  });
+
+  function hideSettings() {
+    settingsMenu.style.display = 'none';
+    showButtonsBtn.style.display = 'block';
+  }
+
+  // --- Weather API ---
+  const weatherAPIKey = 'free'; // using free public API below, no key needed
+  const weatherAPIUrl = 'https://wttr.in/?format=j1';
+
+  async function fetchWeather() {
+    try {
+      const response = await fetch(weatherAPIUrl);
+      if (!response.ok) throw new Error('Network response was not ok');
+      const data = await response.json();
+      displayWeather(data);
+    } catch (err) {
+      weatherDiv.textContent = 'Weather unavailable';
+    }
+  }
+
+  function displayWeather(data) {
+    if (!data || !data.current_condition || data.current_condition.length === 0) {
+      weatherDiv.textContent = 'Weather unavailable';
+      return;
+    }
+    const current = data.current_condition[0];
+    const tempC = current.temp_C;
+    const desc = current.weatherDesc[0].value;
+    const humidity = current.humidity;
+    const feelsLike = current.FeelsLikeC;
+
+    weatherDiv.textContent = `🌡️ ${tempC}°C, ${desc}, Humidity: ${humidity}%, Feels Like: ${feelsLike}°C`;
+  }
+
+  // --- Weather Toggle ---
+  function toggleWeather() {
+    if (weatherToggleCheckbox.checked) {
+      weatherDiv.style.display = 'block';
+      fetchWeather();
+    } else {
+      weatherDiv.style.display = 'none';
+    }
+  }
+
+  // On load
+  window.addEventListener('load', () => {
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+    initSnow();
+    snowLoop();
+    weatherDiv.style.display = 'none'; // start hidden
+  });
+
+  // Update weather every 10 minutes if shown
+  setInterval(() => {
+    if (weatherToggleCheckbox.checked) fetchWeather();
+  }, 10 * 60 * 1000);
+</script>
+
+</body>
+</html>
