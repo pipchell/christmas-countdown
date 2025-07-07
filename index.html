@@ -233,181 +233,229 @@
 <button id="show-buttons" aria-label="Show Buttons">⋯</button>
 
 <div id="settings-menu" role="region" aria-label="Settings Menu">
-  <button class="button" id="toggle-snow">Toggle Snow Effect</button>
-  <button class="button" id="toggle-stars">Toggle Twinkling Stars</button>
-  <button class="button" id="toggle-aurora">Toggle Aurora Borealis</button>
-  <button class="button" id="toggle-santa">Toggle Santa Flyby</button>
-  <button class="button" id="copy-link">Copy Countdown Link</button>
-  <button class="button" id="fullscreen-toggle">Fullscreen</button>
-  <label for="bg-upload" class="button" style="text-align:center; cursor:pointer;">Upload Background</label>
-  <input type="file" id="bg-upload" accept="image/*" />
-  <button class="button" id="reset-bg">Reset Background</button>
+  <button class="button" onclick="toggleSnow()">Toggle Snow</button>
+  <button class="button" onclick="toggleFullscreen(this)">Fullscreen</button>
+  <button class="button" id="copy-link-btn">Copy Link</button>
+  <label class="button" for="bg-upload" style="cursor: pointer;">
+    Upload Background
+    <input type="file" id="bg-upload" accept="image/*" />
+  </label>
 </div>
 
 <script>
-  // Countdown target: next Christmas
-  function getNextChristmas() {
-    const now = new Date();
-    let year = now.getFullYear();
-    const xmas = new Date(year, 11, 25, 0, 0, 0, 0);
-    if (now > xmas) year += 1;
-    return new Date(year, 11, 25, 0, 0, 0, 0);
+  const countdownElems = {
+    days: document.getElementById('days'),
+    hours: document.getElementById('hours'),
+    minutes: document.getElementById('minutes'),
+    seconds: document.getElementById('seconds')
+  };
+
+  const weatherElem = document.getElementById('weather');
+  const snowCanvas = document.querySelector('.snow');
+  const ctx = snowCanvas.getContext('2d');
+  let snowEnabled = true;
+
+  let snowflakes = [];
+
+  function resizeCanvas() {
+    snowCanvas.width = window.innerWidth;
+    snowCanvas.height = window.innerHeight;
   }
 
-  // DOM Elements
-  const daysEl = document.getElementById('days');
-  const hoursEl = document.getElementById('hours');
-  const minutesEl = document.getElementById('minutes');
-  const secondsEl = document.getElementById('seconds');
-  const weatherEl = document.getElementById('weather');
-  const snowCanvas = document.querySelector('canvas.snow');
-  const settingsToggle = document.getElementById('settings-toggle');
-  const settingsMenu = document.getElementById('settings-menu');
-  const showButtonsBtn = document.getElementById('show-buttons');
-  const copyMsg = document.getElementById('copy-msg');
-  const bgUploadInput = document.getElementById('bg-upload');
-  const resetBgBtn = document.getElementById('reset-bg');
-  const fullscreenToggle = document.getElementById('fullscreen-toggle');
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
 
-  // Features toggles
-  const toggleSnowBtn = document.getElementById('toggle-snow');
-  const toggleStarsBtn = document.getElementById('toggle-stars');
-  const toggleAuroraBtn = document.getElementById('toggle-aurora');
-  const toggleSantaBtn = document.getElementById('toggle-santa');
-  const copyLinkBtn = document.getElementById('copy-link');
+  function createSnowflake() {
+    return {
+      x: Math.random() * snowCanvas.width,
+      y: -10,
+      radius: Math.random() * 3 + 1,
+      speed: Math.random() * 1 + 0.5,
+      opacity: Math.random() * 0.5 + 0.3,
+    };
+  }
 
-  let countdownTarget = getNextChristmas();
+  function updateSnow() {
+    if (!snowEnabled) return;
+    ctx.clearRect(0, 0, snowCanvas.width, snowCanvas.height);
 
-  // Countdown update function
-  function updateCountdown() {
-    const now = new Date();
-    let diff = countdownTarget - now;
-
-    if (diff <= 0) {
-      // When countdown hits zero, reset to next year and trigger confetti
-      countdownTarget = getNextChristmas();
-      diff = countdownTarget - now;
-      triggerConfetti();
+    if (snowflakes.length < 100) {
+      snowflakes.push(createSnowflake());
     }
 
-    const seconds = Math.floor((diff / 1000) % 60);
-    const minutes = Math.floor((diff / 1000 / 60) % 60);
-    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    snowflakes.forEach((flake, i) => {
+      flake.y += flake.speed;
+      if (flake.y > snowCanvas.height) {
+        snowflakes.splice(i, 1);
+      } else {
+        ctx.beginPath();
+        ctx.arc(flake.x, flake.y, flake.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${flake.opacity})`;
+        ctx.fill();
+      }
+    });
+    requestAnimationFrame(updateSnow);
+  }
 
-    daysEl.textContent = days.toString().padStart(2, '0');
-    hoursEl.textContent = hours.toString().padStart(2, '0');
-    minutesEl.textContent = minutes.toString().padStart(2, '0');
-    secondsEl.textContent = seconds.toString().padStart(2, '0');
+  updateSnow();
+
+  function toggleSnow() {
+    snowEnabled = !snowEnabled;
+    if (snowEnabled) {
+      updateSnow();
+      document.querySelector('#settings-menu button:nth-child(1)').textContent = 'Toggle Snow';
+    } else {
+      ctx.clearRect(0, 0, snowCanvas.width, snowCanvas.height);
+      document.querySelector('#settings-menu button:nth-child(1)').textContent = 'Snow Off';
+    }
+  }
+
+  // Countdown logic
+  function updateCountdown() {
+    const now = new Date();
+    let year = now.getFullYear();
+    const christmas = new Date(year, 11, 25, 0, 0, 0); // Dec 25
+
+    if (now > christmas) {
+      // Past Christmas this year, count down to next year
+      christmas.setFullYear(year + 1);
+    }
+
+    const diff = christmas - now;
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor(diff / (1000 * 60 * 60)) % 24;
+    const minutes = Math.floor(diff / (1000 * 60)) % 60;
+    const seconds = Math.floor(diff / 1000) % 60;
+
+    countdownElems.days.textContent = days.toString().padStart(2, '0');
+    countdownElems.hours.textContent = hours.toString().padStart(2, '0');
+    countdownElems.minutes.textContent = minutes.toString().padStart(2, '0');
+    countdownElems.seconds.textContent = seconds.toString().padStart(2, '0');
+
+    if (diff <= 0) {
+      // On zero, show confetti or reset countdown
+      // (Not implemented here)
+    }
   }
 
   setInterval(updateCountdown, 1000);
   updateCountdown();
 
-  // Simple confetti effect
-  function triggerConfetti() {
-    // We'll use canvas confetti library or a simple custom confetti
-    // For demo, alert or console log
-    console.log('Confetti triggered!');
-    // Implement confetti here or import a library if needed
-  }
+  // Settings menu toggle
+  const settingsToggle = document.getElementById('settings-toggle');
+  const settingsMenu = document.getElementById('settings-menu');
+  const showButtonsBtn = document.getElementById('show-buttons');
 
-  // Toggle settings menu
   settingsToggle.addEventListener('click', () => {
     if (settingsMenu.style.display === 'flex') {
       settingsMenu.style.display = 'none';
     } else {
       settingsMenu.style.display = 'flex';
-      settingsMenu.style.flexDirection = 'column';
+      showButtonsBtn.style.display = 'none';
     }
   });
-
-  // Show buttons toggle (hide/show settings toggle)
-  let buttonsVisible = true;
-  function updateButtonsVisibility() {
-    if (buttonsVisible) {
-      settingsToggle.style.opacity = '1';
-      settingsToggle.style.pointerEvents = 'auto';
-      showButtonsBtn.style.display = 'none';
-    } else {
-      settingsToggle.style.opacity = '0';
-      settingsToggle.style.pointerEvents = 'none';
-      showButtonsBtn.style.display = 'flex';
-    }
-  }
 
   showButtonsBtn.addEventListener('click', () => {
-    buttonsVisible = true;
-    updateButtonsVisibility();
+    settingsMenu.style.display = 'flex';
+    showButtonsBtn.style.display = 'none';
   });
 
-  // Initial buttons visibility
-  updateButtonsVisibility();
+  // Copy link button
+  const copyLinkBtn = document.getElementById('copy-link-btn');
+  const copyMsg = document.getElementById('copy-msg');
 
-  // Copy countdown link button
   copyLinkBtn.addEventListener('click', () => {
     navigator.clipboard.writeText(window.location.href).then(() => {
       copyMsg.style.display = 'block';
-      setTimeout(() => copyMsg.style.display = 'none', 2000);
+      setTimeout(() => {
+        copyMsg.style.display = 'none';
+      }, 1500);
     });
   });
 
-  // Fullscreen toggle
-  fullscreenToggle.addEventListener('click', () => {
+  // Fullscreen toggle button text swap
+  function toggleFullscreen(button) {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen();
-      fullscreenToggle.textContent = 'Minimise';
-    } else if (document.exitFullscreen) {
-      document.exitFullscreen();
-      fullscreenToggle.textContent = 'Fullscreen';
-    }
-  });
-
-  // Background upload
-  bgUploadInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = function(event) {
-        document.body.style.backgroundImage = `url(${event.target.result})`;
-        document.body.style.backgroundSize = 'cover';
-        document.body.style.backgroundPosition = 'center';
-        adjustTextColorForBackground(event.target.result);
+      button.textContent = 'Minimise';
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+        button.textContent = 'Fullscreen';
       }
-      reader.readAsDataURL(file);
     }
+  }
+
+  // Background upload handling
+  const bgUpload = document.getElementById('bg-upload');
+  bgUpload.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      document.body.style.backgroundImage = `url(${event.target.result})`;
+      document.body.style.backgroundSize = 'cover';
+      document.body.style.backgroundPosition = 'center';
+      document.body.style.backgroundRepeat = 'no-repeat';
+
+      // Adjust text color based on brightness
+      const img = new Image();
+      img.src = event.target.result;
+      img.onload = () => {
+        // Create canvas to get average brightness
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+
+        let data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+        let r, g, b, avg;
+        let colorSum = 0;
+
+        for (let x = 0, len = data.length; x < len; x += 4) {
+          r = data[x];
+          g = data[x + 1];
+          b = data[x + 2];
+          avg = Math.floor((r + g + b) / 3);
+          colorSum += avg;
+        }
+
+        let brightness = Math.floor(colorSum / (img.width * img.height));
+        if (brightness < 128) {
+          document.body.style.color = '#17D860'; // Bright green on dark bg
+        } else {
+          document.body.style.color = '#000'; // Black text on light bg
+        }
+      };
+    };
+    reader.readAsDataURL(file);
   });
 
-  // Reset background button
-  resetBgBtn.addEventListener('click', () => {
-    document.body.style.backgroundImage = 'none';
-    document.body.style.color = '#17D860';
-  });
+  // Initially hide the "show buttons" button, but allow toggle
+  function hideButtons() {
+    settingsToggle.style.opacity = 0;
+    settingsToggle.style.pointerEvents = 'none';
+    showButtonsBtn.style.display = 'flex';
+  }
 
-  // Adjust text color based on brightness of background image
-  // For simplicity, skip actual brightness calculation for now
+  // Example usage of hiding buttons after 5 seconds idle
+  let idleTimeout;
+  function resetIdleTimer() {
+    settingsToggle.style.opacity = 1;
+    settingsToggle.style.pointerEvents = 'auto';
+    showButtonsBtn.style.display = 'none';
 
-  // Snow effect (simple placeholder)
-  let snowEnabled = true;
-  toggleSnowBtn.addEventListener('click', () => {
-    snowEnabled = !snowEnabled;
-    snowCanvas.style.display = snowEnabled ? 'block' : 'none';
-  });
+    clearTimeout(idleTimeout);
+    idleTimeout = setTimeout(hideButtons, 5000);
+  }
 
-  // Initially show snow
-  snowCanvas.style.display = 'block';
-
-  // Other toggles placeholders (stars, aurora, santa)
-  toggleStarsBtn.addEventListener('click', () => {
-    alert('Twinkling stars effect toggled (not implemented)');
-  });
-  toggleAuroraBtn.addEventListener('click', () => {
-    alert('Aurora Borealis effect toggled (not implemented)');
-  });
-  toggleSantaBtn.addEventListener('click', () => {
-    alert('Santa sleigh flyby effect toggled (not implemented)');
-  });
+  document.addEventListener('mousemove', resetIdleTimer);
+  document.addEventListener('keydown', resetIdleTimer);
+  resetIdleTimer();
 
 </script>
+
 </body>
 </html>
