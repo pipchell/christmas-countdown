@@ -4,7 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Christmas Countdown</title>
-  <link rel="icon" href="https://i.ibb.co/0yFj9Sd/browser-icon.png" type="image/png" />
+  <!-- Use local logo.png as favicon -->
+  <link rel="icon" href="logo.png" type="image/png" />
   <style>
     @font-face {
       font-family: 'League Spartan';
@@ -85,71 +86,95 @@
       z-index: 0;
     }
 
+    /* Settings Toggle Button (Gear Icon) */
     #settings-toggle, #show-buttons {
       position: fixed;
       bottom: 15px;
       right: 15px;
       font-family: 'League Spartan', sans-serif;
       font-weight: bold;
-      font-size: 1rem;
+      font-size: 1.5rem;
       background-color: rgba(0,0,0,0.6);
       color: #17D860;
       border: 2px solid #17D860;
       border-radius: 50%;
-      width: 50px;
-      height: 50px;
+      width: 48px;
+      height: 48px;
       cursor: pointer;
       z-index: 100;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      user-select: none;
+    }
+
+    #settings-toggle:hover, #show-buttons:hover {
+      background-color: #17D860;
+      color: #000;
     }
 
     #show-buttons {
+      font-size: 1.2rem;
       display: none;
-      font-size: 0.8rem;
-      opacity: 0.3;
+      opacity: 0.6;
     }
 
+    /* Settings Menu */
     #settings-menu {
       position: fixed;
       bottom: 75px;
       right: 15px;
-      background-color: rgba(0,0,0,0.85);
+      background-color: rgba(0,0,0,0.9);
       border: 2px solid #17D860;
-      border-radius: 12px;
-      padding: 15px;
+      border-radius: 16px;
+      padding: 20px;
       display: none;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
       z-index: 100;
+      width: 220px;
+      box-shadow: 0 4px 15px rgba(23, 216, 96, 0.4);
+      backdrop-filter: saturate(180%) blur(10px);
+      transition: opacity 0.3s ease;
     }
 
+    /* Buttons inside settings */
     .button {
       font-family: 'League Spartan', sans-serif;
       font-weight: bold;
-      padding: 8px 12px;
+      padding: 10px 14px;
       font-size: 1rem;
       color: #17D860;
       background-color: rgba(0,0,0,0.5);
       border: 2px solid #17D860;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
       width: 100%;
+      text-align: center;
+      user-select: none;
+      transition: background-color 0.25s ease;
     }
 
     .button:hover {
-      background-color: rgba(23, 216, 96, 0.2);
+      background-color: rgba(23, 216, 96, 0.3);
     }
 
+    /* Inputs inside labels */
     input[type="color"] {
       width: 100%;
-      height: 2rem;
+      height: 2.4rem;
       border: none;
       cursor: pointer;
+      border-radius: 6px;
+      margin-top: 6px;
     }
 
     input[type="file"] {
       display: none;
     }
 
+    /* Copy message styling */
     #copy-msg {
       position: absolute;
       top: 10px;
@@ -163,6 +188,8 @@
       font-size: 1rem;
       font-weight: bold;
       z-index: 999;
+      user-select: none;
+      box-shadow: 0 0 10px #17D860;
     }
   </style>
 </head>
@@ -181,16 +208,22 @@
 
 <div id="copy-msg">🎄 Link Copied! 🎅</div>
 
-<button id="settings-toggle">⚙️</button>
-<button id="show-buttons">⋯</button>
+<button id="settings-toggle" aria-label="Toggle Settings Menu">⚙️</button>
+<button id="show-buttons" aria-label="Show Settings Buttons">⋯</button>
 
-<div id="settings-menu">
+<div id="settings-menu" role="menu" aria-hidden="true">
   <button class="button" onclick="toggleSnow()">Toggle Snow</button>
   <button class="button" onclick="toggleFullscreen(this)">Fullscreen</button>
-  <label class="button"><input type="color" onchange="changeBgColor(this.value)"> Background Color</label>
-  <label class="button"><input type="color" onchange="changeTextColor(this.value)"> Text Color</label>
+  <label class="button" style="cursor:default;">
+    Background Color
+    <input type="color" onchange="changeBgColor(this.value)" aria-label="Select Background Color" />
+  </label>
+  <label class="button" style="cursor:default;">
+    Text Color
+    <input type="color" onchange="changeTextColor(this.value)" aria-label="Select Text Color" />
+  </label>
   <label class="button" onclick="document.getElementById('bg-upload').click()">Upload Background</label>
-  <input type="file" id="bg-upload" accept="image/*" onchange="handleImageUpload(event)">
+  <input type="file" id="bg-upload" accept="image/*" onchange="handleImageUpload(event)" aria-label="Upload Background Image" />
   <button class="button" onclick="copyLink()">Copy Link</button>
   <button class="button" onclick="hideSettings()">Hide Buttons</button>
 </div>
@@ -269,8 +302,13 @@
 
   setInterval(updateCountdown, 1000);
   updateCountdown();
-  window.addEventListener('resize', initSnow);
-  initSnow(); animateSnow();
+  window.addEventListener('resize', () => {
+    initSnow();
+    // redraw immediately to avoid blank canvas on resize
+    drawSnow();
+  });
+  initSnow();
+  animateSnow();
 
   function toggleSnow() {
     snowCanvas.style.display = (snowCanvas.style.display === 'none') ? 'block' : 'none';
@@ -301,7 +339,7 @@
       document.body.style.backgroundSize = 'cover';
       document.body.style.backgroundPosition = 'center';
       document.body.style.backgroundRepeat = 'no-repeat';
-      document.body.style.color = '#fff'; // auto-adjust
+      document.body.style.color = '#fff'; // auto-adjust for readability
     };
     reader.readAsDataURL(e.target.files[0]);
   }
@@ -316,18 +354,24 @@
   function hideSettings() {
     document.getElementById('settings-menu').style.display = 'none';
     document.getElementById('settings-toggle').style.display = 'none';
-    document.getElementById('show-buttons').style.display = 'block';
+    document.getElementById('show-buttons').style.display = 'flex';
   }
 
   document.getElementById('show-buttons').onclick = () => {
     document.getElementById('settings-menu').style.display = 'flex';
-    document.getElementById('settings-toggle').style.display = 'block';
+    document.getElementById('settings-toggle').style.display = 'flex';
     document.getElementById('show-buttons').style.display = 'none';
   };
 
   document.getElementById('settings-toggle').onclick = () => {
     const menu = document.getElementById('settings-menu');
-    menu.style.display = menu.style.display === 'none' ? 'flex' : 'none';
+    if (menu.style.display === 'none' || menu.style.display === '') {
+      menu.style.display = 'flex';
+      menu.setAttribute('aria-hidden', 'false');
+    } else {
+      menu.style.display = 'none';
+      menu.setAttribute('aria-hidden', 'true');
+    }
   };
 
   function showConfetti() {
