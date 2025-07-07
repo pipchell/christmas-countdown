@@ -176,14 +176,28 @@
       background-color: rgba(23, 216, 96, 0.3);
     }
 
-    input[type="color"] {
-      width: 100%;
-      height: 2rem;
-      border: none;
-      cursor: pointer;
-      padding: 0;
-      margin: 0;
-      background: transparent;
+    #color-picker {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(0,0,0,0.9);
+      border: 2px solid #17D860;
+      border-radius: 12px;
+      padding: 15px;
+      z-index: 1000;
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    #color-picker-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    #color-picker button {
+      flex: 1;
     }
 
     input[type="file"] {
@@ -307,6 +321,15 @@
   <div id="weather-location"></div>
 </div>
 
+<!-- Color Picker -->
+<div id="color-picker">
+  <input type="color" id="color-input">
+  <div id="color-picker-buttons">
+    <button class="button" id="color-apply">Apply</button>
+    <button class="button" id="color-cancel">Cancel</button>
+  </div>
+</div>
+
 <div id="copy-msg">Link Copied!</div>
 
 <button id="settings-toggle" aria-label="Settings">
@@ -318,8 +341,8 @@
 <div id="settings-menu" role="region" aria-label="Settings Menu">
   <button class="button" onclick="toggleSnow()">Toggle Snow</button>
   <button class="button" onclick="toggleFullscreen(this)">Fullscreen</button>
-  <label class="button">Background Color <input type="color" onchange="changeBgColor(this.value)"></label>
-  <label class="button">Text Color <input type="color" onchange="changeTextColor(this.value)"></label>
+  <button class="button" onclick="showColorPicker('background')">Background Color</button>
+  <button class="button" onclick="showColorPicker('text')">Text Color</button>
   <label class="button" onclick="document.getElementById('bg-upload').click()">Upload Background</label>
   <input type="file" id="bg-upload" accept="image/*" onchange="handleImageUpload(event)">
   <button class="button active" id="weather-toggle" onclick="toggleWeather()">Weather Widget</button>
@@ -339,6 +362,10 @@
   const weatherWidget = document.getElementById('weather-widget');
   const weatherToggleBtn = document.getElementById('weather-toggle');
   const autohideToggleBtn = document.getElementById('autohide-toggle');
+  const colorPicker = document.getElementById('color-picker');
+  const colorInput = document.getElementById('color-input');
+  const colorApply = document.getElementById('color-apply');
+  const colorCancel = document.getElementById('color-cancel');
 
   let w, h, flakes = [];
   let countdownEnded = false;
@@ -347,6 +374,7 @@
   let weatherEnabled = true;
   let autoHideEnabled = true;
   let settingsButtonReady = false;
+  let currentColorType = '';
 
   // Initialize with saved preferences
   function loadPreferences() {
@@ -539,14 +567,21 @@
     }
   }
 
-  function changeBgColor(val) {
-    document.body.style.backgroundColor = val;
+  function showColorPicker(type) {
+    currentColorType = type;
+    colorInput.value = type === 'background' ? '#000000' : '#17D860';
+    colorPicker.style.display = 'flex';
   }
 
-  function changeTextColor(val) {
-    document.body.style.color = val;
-    document.getElementById('weather-widget').style.color = val;
-    document.getElementById('weather-widget').style.borderColor = val;
+  function applyColor() {
+    if (currentColorType === 'background') {
+      document.body.style.backgroundColor = colorInput.value;
+    } else {
+      document.body.style.color = colorInput.value;
+      document.getElementById('weather-widget').style.color = colorInput.value;
+      document.getElementById('weather-widget').style.borderColor = colorInput.value;
+    }
+    colorPicker.style.display = 'none';
   }
 
   function handleImageUpload(e) {
@@ -586,10 +621,20 @@
 
   // Close settings when clicking anywhere
   document.addEventListener('click', function(e) {
+    // If clicking outside settings menu and not on the toggle button
     if (settingsMenu.style.display === 'flex' && 
         !e.target.closest('#settings-menu') && 
         !e.target.closest('#settings-toggle')) {
-      hideSettings();
+      // Simulate clicking the settings button again
+      if (settingsButtonReady) {
+        settingsToggle.click();
+      }
+    }
+    
+    // If clicking outside color picker
+    if (colorPicker.style.display === 'flex' && 
+        !e.target.closest('#color-picker')) {
+      colorPicker.style.display = 'none';
     }
   });
 
@@ -627,6 +672,11 @@
       }, 20);
     }
     handleMouseMove({target: {closest: () => false}});
+  };
+
+  colorApply.onclick = applyColor;
+  colorCancel.onclick = function() {
+    colorPicker.style.display = 'none';
   };
 
   function showConfetti() {
