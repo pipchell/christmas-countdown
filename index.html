@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Christmas Countdown</title>
   <link rel="icon" href="https://i.ibb.co/0yFj9Sd/browser-icon.png" type="image/png" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     @font-face {
       font-family: 'League Spartan';
@@ -72,6 +73,9 @@
       /* Center horizontally */
       text-align: center;
       width: 100%;
+      /* Prevent text movement */
+      display: inline-block;
+      min-width: 2ch;
     }
 
     .countdown .label {
@@ -82,6 +86,9 @@
       /* Keep labels stable, no shifting */
       height: 1.2em;
       user-select: none;
+      /* Prevent text movement */
+      display: inline-block;
+      min-width: 5ch;
     }
 
     canvas.snow {
@@ -113,6 +120,11 @@
       align-items: center;
       transition: opacity 0.5s ease;
       user-select: none;
+      opacity: 0;
+    }
+
+    #settings-toggle.visible {
+      opacity: 1;
     }
 
     #show-buttons {
@@ -159,6 +171,14 @@
       background-color: rgba(23, 216, 96, 0.2);
     }
 
+    .button.active {
+      background-color: rgba(23, 216, 96, 0.3);
+    }
+
+    .button i {
+      margin-right: 8px;
+    }
+
     input[type="color"] {
       width: 100%;
       height: 2rem;
@@ -195,6 +215,64 @@
       pointer-events: none;
       transition: opacity 0.5s ease;
     }
+
+    /* Weather widget styles */
+    #weather-widget {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(0, 0, 0, 0.6);
+      border: 2px solid #17D860;
+      border-radius: 12px;
+      padding: 10px 15px;
+      display: none;
+      align-items: center;
+      gap: 10px;
+      z-index: 50;
+      font-size: 1rem;
+      color: #17D860;
+    }
+
+    #weather-icon {
+      width: 40px;
+      height: 40px;
+    }
+
+    #weather-temp {
+      font-weight: bold;
+      font-size: 1.2rem;
+      min-width: 50px;
+      text-align: center;
+    }
+
+    #weather-location {
+      opacity: 0.8;
+      font-size: 0.9rem;
+      min-width: 120px;
+    }
+
+    #weather-description {
+      text-transform: capitalize;
+      min-width: 100px;
+    }
+
+    @media (max-width: 600px) {
+      #weather-widget {
+        flex-direction: column;
+        gap: 5px;
+        padding: 8px 10px;
+        font-size: 0.9rem;
+      }
+      
+      #weather-temp {
+        font-size: 1rem;
+      }
+      
+      #weather-location {
+        font-size: 0.8rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -210,25 +288,33 @@
   </div>
 </div>
 
+<!-- Weather Widget -->
+<div id="weather-widget">
+  <img id="weather-icon" src="" alt="Weather icon">
+  <div id="weather-temp">--°</div>
+  <div id="weather-description">Loading...</div>
+  <div id="weather-location"></div>
+</div>
+
 <div id="copy-msg">Link Copied!</div>
 
 <button id="settings-toggle" aria-label="Settings">
-  <svg width="24" height="24" fill="#17D860" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-    <path d="M19.43 12.98c.04-.32.07-.66.07-1s-.03-.68-.07-1l2.11-1.65a.5.5 0 0 0 .11-.64l-2-3.46a.5.5 0 0 0-.6-.22l-2.49 1a7.07 7.07 0 0 0-1.7-.99l-.38-2.65A.5.5 0 0 0 14 3h-4a.5.5 0 0 0-.5.43l-.38 2.65a7.07 7.07 0 0 0-1.7.99l-2.49-1a.5.5 0 0 0-.6.22l-2 3.46a.5.5 0 0 0 .11.64l2.11 1.65c-.04.32-.07.66-.07 1s.03.68.07 1L2.1 14.63a.5.5 0 0 0-.11.64l2 3.46a.5.5 0 0 0 .6.22l2.49-1c.5.38 1.04.68 1.7.99l.38 2.65A.5.5 0 0 0 10 21h4a.5.5 0 0 0 .5-.43l.38-2.65c.66-.3 1.2-.61 1.7-.99l2.49 1a.5.5 0 0 0 .6-.22l2-3.46a.5.5 0 0 0-.11-.64l-2.13-1.65zM12 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"/>
-  </svg>
+  <i class="fas fa-cog"></i>
 </button>
 
 <button id="show-buttons" aria-label="Show Buttons">⋯</button>
 
 <div id="settings-menu" role="region" aria-label="Settings Menu">
-  <button class="button" onclick="toggleSnow()">Toggle Snow</button>
-  <button class="button" onclick="toggleFullscreen(this)">Fullscreen</button>
-  <label class="button"><input type="color" onchange="changeBgColor(this.value)"> Background Color</label>
-  <label class="button"><input type="color" onchange="changeTextColor(this.value)"> Text Color</label>
-  <label class="button" onclick="document.getElementById('bg-upload').click()">Upload Background</label>
+  <button class="button" onclick="toggleSnow()"><i class="fas fa-snowflake"></i> Toggle Snow</button>
+  <button class="button" onclick="toggleFullscreen(this)"><i class="fas fa-expand"></i> Fullscreen</button>
+  <label class="button"><i class="fas fa-palette"></i> <input type="color" onchange="changeBgColor(this.value)"> Background Color</label>
+  <label class="button"><i class="fas fa-font"></i> <input type="color" onchange="changeTextColor(this.value)"> Text Color</label>
+  <label class="button" onclick="document.getElementById('bg-upload').click()"><i class="fas fa-image"></i> Upload Background</label>
   <input type="file" id="bg-upload" accept="image/*" onchange="handleImageUpload(event)">
-  <button class="button" onclick="copyLink()">Copy Link</button>
-  <button class="button" onclick="hideSettings()">Hide Buttons</button>
+  <button class="button" id="weather-toggle" onclick="toggleWeather()"><i class="fas fa-cloud-sun"></i> Weather Widget</button>
+  <button class="button" id="autohide-toggle" onclick="toggleAutoHide()"><i class="fas fa-eye-slash"></i> Auto-hide Buttons</button>
+  <button class="button" onclick="copyLink()"><i class="fas fa-link"></i> Copy Link</button>
+  <button class="button" onclick="hideSettings()"><i class="fas fa-times"></i> Hide Buttons</button>
 </div>
 
 <script>
@@ -239,10 +325,68 @@
   const settingsMenu = document.getElementById('settings-menu');
   const settingsToggle = document.getElementById('settings-toggle');
   const showButtonsBtn = document.getElementById('show-buttons');
+  const weatherWidget = document.getElementById('weather-widget');
+  const weatherToggleBtn = document.getElementById('weather-toggle');
+  const autohideToggleBtn = document.getElementById('autohide-toggle');
 
   let w, h, flakes = [];
   let countdownEnded = false;
   let resetTimeout = null;
+  let mouseMoveTimer;
+  let weatherEnabled = true;
+  let autoHideEnabled = true;
+
+  // Initialize with saved preferences
+  function loadPreferences() {
+    // Weather preference
+    const savedWeatherPref = localStorage.getItem('weatherEnabled');
+    if (savedWeatherPref !== null) {
+      weatherEnabled = savedWeatherPref === 'true';
+      weatherToggleBtn.classList.toggle('active', weatherEnabled);
+      if (weatherEnabled) fetchWeather();
+    }
+    
+    // Auto-hide preference
+    const savedAutoHidePref = localStorage.getItem('autoHideEnabled');
+    if (savedAutoHidePref !== null) {
+      autoHideEnabled = savedAutoHidePref === 'true';
+      autohideToggleBtn.classList.toggle('active', autoHideEnabled);
+      if (!autoHideEnabled) settingsToggle.classList.add('visible');
+    }
+  }
+
+  // Initialize mouse movement detection if auto-hide is enabled
+  function setupAutoHide() {
+    if (autoHideEnabled) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('click', handleMouseMove);
+      document.addEventListener('scroll', handleMouseMove);
+      document.addEventListener('keydown', handleMouseMove);
+    } else {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('click', handleMouseMove);
+      document.removeEventListener('scroll', handleMouseMove);
+      document.removeEventListener('keydown', handleMouseMove);
+      settingsToggle.classList.add('visible');
+    }
+  }
+
+  function handleMouseMove() {
+    if (!autoHideEnabled) return;
+    
+    // Show settings button
+    settingsToggle.classList.add('visible');
+    
+    // Clear any existing timer
+    clearTimeout(mouseMoveTimer);
+    
+    // Hide after 3 seconds of inactivity
+    mouseMoveTimer = setTimeout(() => {
+      if (!settingsMenu.style.display || settingsMenu.style.display === 'none') {
+        settingsToggle.classList.remove('visible');
+      }
+    }, 3000);
+  }
 
   function initSnow() {
     w = snowCanvas.width = window.innerWidth;
@@ -312,6 +456,7 @@
       const hrs = Math.floor(diff / (1000 * 60 * 60)) % 24;
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
+      // Update values without causing layout shifts
       document.getElementById('days').textContent = days;
       document.getElementById('hours').textContent = hrs.toString().padStart(2, '0');
       document.getElementById('minutes').textContent = mins.toString().padStart(2, '0');
@@ -319,12 +464,99 @@
     }
   }
 
+  // Weather functions using IP-based location
+  function fetchWeather() {
+    if (!weatherEnabled) return;
+    
+    // First get approximate location from IP
+    fetch('https://ipapi.co/json/')
+      .then(response => response.json())
+      .then(locationData => {
+        const city = locationData.city;
+        const country = locationData.country_name;
+        
+        // Update location immediately
+        document.getElementById('weather-location').textContent = `${city}, ${country}`;
+        
+        // Get weather data based on location
+        return fetch(`https://wttr.in/${city}?format=%t+%C`);
+      })
+      .then(response => response.text())
+      .then(weatherData => {
+        if (weatherData && weatherData.includes("°")) {
+          const parts = weatherData.split(" ");
+          const temp = parts[0];
+          const description = parts.slice(1).join(" ");
+          
+          document.getElementById('weather-temp').textContent = temp;
+          document.getElementById('weather-description').textContent = description.toLowerCase();
+          
+          // Set appropriate weather icon
+          setWeatherIcon(description);
+          
+          // Show the widget
+          weatherWidget.style.display = 'flex';
+        }
+      })
+      .catch(error => {
+        console.error("Error fetching weather:", error);
+        weatherWidget.style.display = 'none';
+      });
+  }
+
+  function setWeatherIcon(description) {
+    const icon = document.getElementById('weather-icon');
+    const desc = description.toLowerCase();
+    
+    if (desc.includes("sun") || desc.includes("clear")) {
+      icon.src = "https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.12/svg/wi-day-sunny.svg";
+    } else if (desc.includes("cloud")) {
+      icon.src = "https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.12/svg/wi-cloudy.svg";
+    } else if (desc.includes("rain")) {
+      icon.src = "https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.12/svg/wi-rain.svg";
+    } else if (desc.includes("snow")) {
+      icon.src = "https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.12/svg/wi-snow.svg";
+    } else if (desc.includes("thunder") || desc.includes("storm")) {
+      icon.src = "https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.12/svg/wi-thunderstorm.svg";
+    } else if (desc.includes("fog") || desc.includes("mist")) {
+      icon.src = "https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.12/svg/wi-fog.svg";
+    } else {
+      icon.src = "https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.12/svg/wi-day-cloudy.svg";
+    }
+    icon.alt = description;
+  }
+
+  function toggleWeather() {
+    weatherEnabled = !weatherEnabled;
+    weatherToggleBtn.classList.toggle('active', weatherEnabled);
+    if (weatherEnabled) {
+      fetchWeather();
+    } else {
+      weatherWidget.style.display = 'none';
+    }
+    // Save preference to localStorage
+    localStorage.setItem('weatherEnabled', weatherEnabled);
+  }
+
+  function toggleAutoHide() {
+    autoHideEnabled = !autoHideEnabled;
+    autohideToggleBtn.classList.toggle('active', autoHideEnabled);
+    setupAutoHide();
+    // Save preference to localStorage
+    localStorage.setItem('autoHideEnabled', autoHideEnabled);
+  }
+
   setInterval(updateCountdown, 1000);
   updateCountdown();
   window.addEventListener('resize', () => {
     initSnow();
   });
-  initSnow(); animateSnow();
+  initSnow(); 
+  animateSnow();
+  
+  // Initialize with saved preferences
+  loadPreferences();
+  setupAutoHide();
 
   function toggleSnow() {
     snowCanvas.style.display = (snowCanvas.style.display === 'none') ? 'block' : 'none';
@@ -333,10 +565,10 @@
   function toggleFullscreen(btn) {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen();
-      btn.textContent = 'Minimise';
+      btn.innerHTML = '<i class="fas fa-compress"></i> Minimise';
     } else {
       document.exitFullscreen();
-      btn.textContent = 'Fullscreen';
+      btn.innerHTML = '<i class="fas fa-expand"></i> Fullscreen';
     }
   }
 
@@ -346,6 +578,9 @@
 
   function changeTextColor(val) {
     document.body.style.color = val;
+    // Also update weather widget text color
+    document.getElementById('weather-widget').style.color = val;
+    document.getElementById('weather-widget').style.borderColor = val;
   }
 
   function handleImageUpload(e) {
@@ -416,6 +651,7 @@
         settingsMenu.style.opacity = '1';
       }, 20);
     }
+    handleMouseMove(); // Reset the hide timer
   };
 
   function showConfetti() {
