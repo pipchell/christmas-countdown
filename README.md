@@ -22,6 +22,7 @@ No emojis in UI for a clean professional look.
 How to Use
 Open the page in any modern browser.
 Watch the countdown to Christmas update in real time.
+You can change code to make it personalised.
 
 Click the cog icon in the bottom-right corner to open the settings menu.
 Use the buttons to:
