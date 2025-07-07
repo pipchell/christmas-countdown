@@ -1,239 +1,262 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Christmas Countdown</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@700&display=swap');
-
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'League Spartan', sans-serif;
-      background: url('your-background.jpg') no-repeat center center/cover;
-      color: white;
-      text-align: center;
-      height: 100vh;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    h1 {
-      font-size: 3em;
-      margin-bottom: 20px;
-      text-shadow: 0 2px 8px rgba(0,0,0,0.6);
-    }
-
-    .countdown {
-      display: flex;
-      justify-content: center;
-      gap: 40px;
-      font-size: 2em;
-    }
-
-    .time-section {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-width: 70px;
-    }
-
-    .time-section .value {
-      font-size: 3em;
-      min-height: 1em;
-    }
-
-    .buttons {
-      position: fixed;
-      bottom: 80px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 12px;
-      transition: opacity 0.6s ease;
-    }
-
-    .buttons.hidden {
-      opacity: 0.03;
-      pointer-events: none;
-    }
-
-    .buttons button {
-      font-family: 'League Spartan', sans-serif;
-      background-color: rgba(0, 0, 0, 0.6);
-      color: white;
-      padding: 10px 18px;
-      font-size: 1em;
-      border: 2px solid #17D860;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-
-    .buttons button:hover {
-      background-color: rgba(23, 216, 96, 0.3);
-    }
-
-    #settings-toggle {
-      position: fixed;
-      bottom: 15px;
-      right: 15px;
-      width: 50px;
-      height: 50px;
-      background-color: rgba(0,0,0,0.6);
-      border: 2px solid #17D860;
-      border-radius: 50%;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 100;
-    }
-
-    #settings-toggle svg {
-      width: 24px;
-      height: 24px;
-      fill: #17D860;
-    }
-
-    #weather {
-      margin-top: 30px;
-      font-size: 1.2em;
-      text-shadow: 0 1px 5px rgba(0,0,0,0.4);
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Christmas Countdown</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@700&display=swap');
+  body {
+    margin: 0; padding: 0;
+    background: #111;
+    color: #17D860;
+    font-family: 'League Spartan', sans-serif;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    height: 100vh;
+    text-align: center;
+  }
+  h1 {
+    font-size: 3em;
+    margin-bottom: 0.3em;
+  }
+  .countdown {
+    display: flex;
+    gap: 2rem;
+  }
+  .time-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 70px;
+  }
+  .time-section .value {
+    font-size: 4em;
+    line-height: 1;
+  }
+  .time-section span.unit {
+    font-size: 1.3em;
+    user-select: none;
+    pointer-events: none;
+  }
+  .buttons {
+    position: fixed;
+    bottom: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 12px;
+    transition: opacity 0.5s ease;
+  }
+  .buttons.hidden {
+    opacity: 0.05;
+    pointer-events: none;
+  }
+  .buttons button {
+    font-family: 'League Spartan', sans-serif;
+    background: transparent;
+    border: 2px solid #17D860;
+    border-radius: 12px;
+    color: #17D860;
+    font-weight: 700;
+    padding: 0.5em 1em;
+    cursor: pointer;
+  }
+  #settings-toggle {
+    position: fixed;
+    bottom: 15px;
+    right: 15px;
+    width: 48px; height: 48px;
+    background: transparent;
+    border: 2px solid #17D860;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  #settings-toggle svg {
+    fill: #17D860;
+    width: 24px;
+    height: 24px;
+  }
+  #weather {
+    margin-top: 1em;
+    font-size: 1.3em;
+    user-select: none;
+  }
+  #weather.hidden {
+    display: none;
+  }
+</style>
 </head>
 <body>
-  <h1>Christmas Countdown</h1>
 
-  <div class="countdown">
-    <div class="time-section">
-      <span id="days" class="value">0</span>
-      <span>Days</span>
-    </div>
-    <div class="time-section">
-      <span id="hours" class="value">0</span>
-      <span>Hours</span>
-    </div>
-    <div class="time-section">
-      <span id="minutes" class="value">0</span>
-      <span>Minutes</span>
-    </div>
-    <div class="time-section">
-      <span id="seconds" class="value">0</span>
-      <span>Seconds</span>
-    </div>
+<h1>Christmas Countdown</h1>
+
+<div class="countdown">
+  <div class="time-section">
+    <div id="days" class="value">0</div>
+    <span class="unit">Days</span>
   </div>
-
-  <div id="weather"></div>
-
-  <div class="buttons" id="button-panel">
-    <button onclick="toggleSnow()">Toggle Snow</button>
-    <button onclick="toggleStars()">Twinkling Lights</button>
-    <button onclick="aurora()">Aurora Effect</button>
-    <button onclick="santaFly()">Santa Flyby</button>
-    <button onclick="confetti()">Confetti Blast</button>
-    <button onclick="uploadBackground()">Custom Background</button>
-    <button onclick="toggleFullscreen()">Fullscreen</button>
-    <button onclick="fetchWeather()">Show Weather</button>
+  <div class="time-section">
+    <div id="hours" class="value">0</div>
+    <span class="unit">Hours</span>
   </div>
+  <div class="time-section">
+    <div id="minutes" class="value">0</div>
+    <span class="unit">Minutes</span>
+  </div>
+  <div class="time-section">
+    <div id="seconds" class="value">0</div>
+    <span class="unit">Seconds</span>
+  </div>
+</div>
 
-  <button id="settings-toggle" aria-label="Settings" onclick="toggleButtons()">
-    <svg viewBox="0 0 24 24">
-      <path d="M12 15.5A3.5 3.5 0 1 0 12 8.5a3.5 3.5 0 0 0 0 7zm8.94-3.5c0-.64-.06-1.27-.18-1.88l2.1-1.65a.5.5 0 0 0 .12-.64l-2-3.46a.5.5 0 0 0-.6-.22l-2.48 1a8.9 8.9 0 0 0-1.63-.95l-.38-2.65a.5.5 0 0 0-.5-.42h-4a.5.5 0 0 0-.5.42l-.38 2.65c-.58.23-1.13.53-1.63.95l-2.48-1a.5.5 0 0 0-.6.22l-2 3.46a.5.5 0 0 0 .12.64l2.1 1.65a9.08 9.08 0 0 0-.18 1.88c0 .64.06 1.27.18 1.88l-2.1 1.65a.5.5 0 0 0-.12.64l2 3.46a.5.5 0 0 0 .6.22l2.48-1c.5.42 1.05.72 1.63.95l.38 2.65a.5.5 0 0 0 .5.42h4a.5.5 0 0 0 .5-.42l.38-2.65c.58-.23 1.13-.53 1.63-.95l2.48 1a.5.5 0 0 0 .6-.22l2-3.46a.5.5 0 0 0-.12-.64l-2.1-1.65c.12-.61.18-1.24.18-1.88z"/>
-    </svg>
+<div class="buttons" id="buttons">
+  <button onclick="toggleButtons()">
+    Hide Buttons
   </button>
+  <button id="weather-toggle" onclick="toggleWeather()">
+    Show Weather
+  </button>
+</div>
 
-  <script>
-    function getNextChristmas() {
-      const now = new Date();
-      const year = now.getUTCFullYear();
-      let christmas = new Date(Date.UTC(year, 11, 25, 0, 0, 0)); // Dec 25 UTC
-      if (now > new Date(christmas.getTime() + 5 * 60 * 1000)) {
-        christmas = new Date(Date.UTC(year + 1, 11, 25, 0, 0, 0));
+<button id="settings-toggle" aria-label="Settings" onclick="toggleButtons()">
+  <!-- Cog SVG icon -->
+  <svg viewBox="0 0 24 24">
+    <path d="M12 15.5A3.5 3.5 0 1 0 12 8.5a3.5 3.5 0 0 0 0 7zm8.94-3.5c0-.64-.06-1.27-.18-1.88l2.1-1.65a.5.5 0 0 0 .12-.64l-2-3.46a.5.5 0 0 0-.6-.22l-2.48 1a8.9 8.9 0 0 0-1.63-.95l-.38-2.65a.5.5 0 0 0-.5-.42h-4a.5.5 0 0 0-.5.42l-.38 2.65c-.58.23-1.13.53-1.63.95l-2.48-1a.5.5 0 0 0-.6.22l-2 3.46a.5.5 0 0 0 .12.64l2.1 1.65a9.08 9.08 0 0 0-.18 1.88c0 .64.06 1.27.18 1.88l-2.1 1.65a.5.5 0 0 0-.12.64l2 3.46a.5.5 0 0 0 .6.22l2.48-1c.5.42 1.05.72 1.63.95l.38 2.65a.5.5 0 0 0 .5.42h4a.5.5 0 0 0 .5-.42l.38-2.65c.58-.23 1.13-.53 1.63-.95l2.48 1a.5.5 0 0 0 .6-.22l2-3.46a.5.5 0 0 0-.12-.64l-2.1-1.65c.12-.61.18-1.24.18-1.88z"/>
+  </svg>
+</button>
+
+<div id="weather" class="hidden" aria-live="polite" aria-atomic="true">
+  Loading weather...
+</div>
+
+<script>
+  let buttonsVisible = true;
+  let weatherVisible = false;
+  const buttons = document.getElementById('buttons');
+  const weatherDiv = document.getElementById('weather');
+  const weatherToggleBtn = document.getElementById('weather-toggle');
+
+  function toggleButtons() {
+    buttonsVisible = !buttonsVisible;
+    if (buttonsVisible) {
+      buttons.classList.remove('hidden');
+    } else {
+      buttons.classList.add('hidden');
+    }
+  }
+
+  function toggleWeather() {
+    weatherVisible = !weatherVisible;
+    if (weatherVisible) {
+      weatherDiv.classList.remove('hidden');
+      weatherToggleBtn.textContent = 'Hide Weather';
+      fetchWeather();
+    } else {
+      weatherDiv.classList.add('hidden');
+      weatherToggleBtn.textContent = 'Show Weather';
+    }
+  }
+
+  function getNextChristmas() {
+    const now = new Date();
+    const year = now.getFullYear();
+    let christmas = new Date(year, 11, 25, 0, 0, 0);
+    if (now > new Date(christmas.getTime() + 5*60*1000)) {
+      christmas = new Date(year + 1, 11, 25, 0, 0, 0);
+    }
+    return christmas;
+  }
+
+  let targetDate = getNextChristmas();
+
+  function updateCountdown() {
+    const now = new Date();
+    let diff = targetDate - now;
+    if (diff <= 0) {
+      targetDate = getNextChristmas();
+      diff = targetDate - now;
+    }
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const minutes = Math.floor((diff / (1000 * 60)) % 60);
+    const seconds = Math.floor((diff / 1000) % 60);
+
+    document.getElementById('days').textContent = days;
+    document.getElementById('hours').textContent = hours;
+    document.getElementById('minutes').textContent = minutes;
+    document.getElementById('seconds').textContent = seconds;
+  }
+
+  setInterval(updateCountdown, 1000);
+  updateCountdown();
+
+  async function fetchWeather() {
+    weatherDiv.textContent = 'Loading weather...';
+    if (!navigator.geolocation) {
+      weatherDiv.textContent = 'Geolocation not supported.';
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(async (position) => {
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+
+      try {
+        // Open-Meteo API, current temperature & weather code
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('Weather fetch failed');
+        const data = await res.json();
+        const temp = data.current_weather.temperature;
+        const code = data.current_weather.weathercode;
+        const weatherText = weatherCodeToText(code);
+        weatherDiv.textContent = `Current: ${temp}°C, ${weatherText}`;
+      } catch (e) {
+        weatherDiv.textContent = 'Failed to fetch weather.';
       }
-      return christmas;
-    }
+    }, () => {
+      weatherDiv.textContent = 'Location access denied.';
+    });
+  }
 
-    let targetDate = getNextChristmas();
+  function weatherCodeToText(code) {
+    // Basic weather codes from Open-Meteo docs
+    const map = {
+      0: 'Clear sky',
+      1: 'Mainly clear',
+      2: 'Partly cloudy',
+      3: 'Overcast',
+      45: 'Fog',
+      48: 'Depositing rime fog',
+      51: 'Light drizzle',
+      53: 'Moderate drizzle',
+      55: 'Dense drizzle',
+      56: 'Light freezing drizzle',
+      57: 'Dense freezing drizzle',
+      61: 'Slight rain',
+      63: 'Moderate rain',
+      65: 'Heavy rain',
+      66: 'Light freezing rain',
+      67: 'Heavy freezing rain',
+      71: 'Slight snow fall',
+      73: 'Moderate snow fall',
+      75: 'Heavy snow fall',
+      77: 'Snow grains',
+      80: 'Slight rain showers',
+      81: 'Moderate rain showers',
+      82: 'Violent rain showers',
+      85: 'Slight snow showers',
+      86: 'Heavy snow showers',
+      95: 'Thunderstorm',
+      96: 'Thunderstorm with slight hail',
+      99: 'Thunderstorm with heavy hail',
+    };
+    return map[code] || 'Unknown';
+  }
+</script>
 
-    function updateCountdown() {
-      const now = new Date();
-      const diff = targetDate - now;
-      const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
-      const m = Math.floor((diff / (1000 * 60)) % 60);
-      const s = Math.floor((diff / 1000) % 60);
-
-      document.getElementById('days').textContent = d;
-      document.getElementById('hours').textContent = h;
-      document.getElementById('minutes').textContent = m;
-      document.getElementById('seconds').textContent = s;
-
-      if (diff <= 0) {
-        targetDate = getNextChristmas();
-      }
-    }
-
-    setInterval(updateCountdown, 1000);
-    updateCountdown();
-
-    function toggleButtons() {
-      document.getElementById("button-panel").classList.toggle("hidden");
-    }
-
-    function fetchWeather() {
-      fetch("https://wttr.in/?format=%l:+%t,+%c")
-        .then(res => res.text())
-        .then(data => {
-          document.getElementById("weather").textContent = data;
-        });
-    }
-
-    function toggleFullscreen() {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen();
-      } else {
-        document.exitFullscreen();
-      }
-    }
-
-    function uploadBackground() {
-      const input = document.createElement("input");
-      input.type = "file";
-      input.accept = "image/*";
-      input.onchange = e => {
-        const file = e.target.files[0];
-        const url = URL.createObjectURL(file);
-        document.body.style.backgroundImage = `url('${url}')`;
-      };
-      input.click();
-    }
-
-    function toggleSnow() {
-      alert("Snow effect toggled (placeholder)");
-    }
-
-    function toggleStars() {
-      alert("Twinkling lights toggled (placeholder)");
-    }
-
-    function aurora() {
-      alert("Aurora effect (placeholder)");
-    }
-
-    function santaFly() {
-      alert("Santa flyby (placeholder)");
-    }
-
-    function confetti() {
-      alert("Confetti triggered (placeholder)");
-    }
-  </script>
 </body>
 </html>
