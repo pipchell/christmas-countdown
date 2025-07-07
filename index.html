@@ -96,14 +96,14 @@
       z-index: 0;
     }
 
-    #settings-toggle, #show-buttons {
+    #settings-toggle {
       position: fixed;
-      bottom: 15px;
-      right: 15px;
+      bottom: 20px;
+      right: 20px;
       font-family: 'League Spartan', sans-serif;
       font-weight: bold;
       font-size: 1.2rem;
-      background-color: rgba(0,0,0,0.6);
+      background-color: rgba(0,0,0,0.7);
       color: #17D860;
       border: 2px solid #17D860;
       border-radius: 50%;
@@ -114,66 +114,65 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      transition: opacity 0.5s ease;
+      transition: all 0.3s ease;
       user-select: none;
       opacity: 0;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.5);
     }
 
     #settings-toggle.visible {
       opacity: 1;
     }
 
-    #show-buttons {
-      display: none;
-      font-size: 1.4rem;
-      opacity: 0.15;
-      font-weight: normal;
-      line-height: 0;
-      padding-bottom: 2px;
+    #settings-toggle:hover {
+      transform: scale(1.1);
+      background-color: rgba(23, 216, 96, 0.2);
     }
 
     #settings-menu {
       position: fixed;
-      bottom: 75px;
-      right: 15px;
-      background-color: rgba(0,0,0,0.85);
+      bottom: 80px;
+      right: 20px;
+      background-color: rgba(0,0,0,0.9);
       border: 2px solid #17D860;
       border-radius: 12px;
       padding: 15px;
       display: none;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
       z-index: 100;
       opacity: 1;
-      transition: opacity 0.5s ease;
+      transition: all 0.3s ease;
       max-width: 90vw;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.7);
     }
 
     .button {
       font-family: 'League Spartan', sans-serif;
       font-weight: bold;
-      padding: 8px 12px;
+      padding: 10px 15px;
       font-size: 1rem;
       color: #17D860;
-      background-color: rgba(0,0,0,0.5);
+      background-color: rgba(0,0,0,0.6);
       border: 2px solid #17D860;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
       width: 100%;
       user-select: none;
-      transition: background-color 0.3s ease;
-      text-align: left;
+      transition: all 0.2s ease;
+      text-align: center;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
     .button:hover {
-      background-color: rgba(23, 216, 96, 0.2);
+      background-color: rgba(23, 216, 96, 0.3);
+      transform: translateY(-2px);
     }
 
     .button.active {
-      background-color: rgba(23, 216, 96, 0.3);
+      background-color: rgba(23, 216, 96, 0.4);
     }
 
     #color-picker {
@@ -181,49 +180,51 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background-color: rgba(0,0,0,0.9);
+      background-color: rgba(0,0,0,0.95);
       border: 2px solid #17D860;
       border-radius: 12px;
-      padding: 15px;
+      padding: 20px;
       z-index: 1000;
       display: none;
       flex-direction: column;
-      gap: 10px;
+      gap: 15px;
+      width: 280px;
+      max-width: 90vw;
+      box-shadow: 0 4px 30px rgba(0,0,0,0.8);
     }
 
     #color-picker-buttons {
       display: flex;
       gap: 10px;
+      justify-content: center;
     }
 
     #color-picker button {
       flex: 1;
+      padding: 8px;
     }
 
-    input[type="file"] {
-      display: none;
+    #color-input {
+      width: 100%;
+      height: 40px;
+      cursor: pointer;
     }
 
     #copy-msg {
       position: absolute;
-      top: 10px;
+      top: 20px;
       left: 50%;
       transform: translateX(-50%);
       background: #17D860;
       color: black;
-      padding: 8px 16px;
+      padding: 10px 20px;
       border-radius: 8px;
       display: none;
       font-size: 1rem;
       font-weight: bold;
       z-index: 999;
       user-select: none;
-    }
-
-    .fade-out {
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.5s ease;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
     }
 
     /* Weather widget styles */
@@ -232,29 +233,30 @@
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      background-color: rgba(0, 0, 0, 0.6);
+      background-color: rgba(0, 0, 0, 0.7);
       border: 2px solid #17D860;
       border-radius: 12px;
-      padding: 8px 12px;
+      padding: 10px 15px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       z-index: 50;
       font-size: 0.9rem;
       color: #17D860;
       max-width: 95vw;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
     }
 
     #weather-temp {
       font-weight: bold;
-      font-size: 1rem;
-      min-width: 40px;
+      font-size: 1.1rem;
+      min-width: 45px;
       text-align: center;
     }
 
     #weather-location {
-      opacity: 0.8;
-      font-size: 0.8rem;
+      opacity: 0.9;
+      font-size: 0.85rem;
       min-width: 100px;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -262,41 +264,66 @@
 
     #weather-description {
       text-transform: capitalize;
-      min-width: 80px;
+      min-width: 90px;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
-    @media (max-width: 480px) {
+    @media (max-width: 600px) {
+      .countdown {
+        gap: 0.8rem;
+      }
+      
+      #settings-menu {
+        bottom: 75px;
+        right: 15px;
+        padding: 12px;
+        gap: 10px;
+      }
+      
+      .button {
+        padding: 8px 12px;
+        font-size: 0.95rem;
+      }
+      
       #weather-widget {
-        flex-wrap: wrap;
-        justify-content: center;
-        padding: 6px 8px;
-        gap: 4px 8px;
-        bottom: 10px;
+        flex-direction: column;
+        gap: 5px;
+        padding: 8px 12px;
+        bottom: 15px;
       }
       
-      #weather-temp {
-        font-size: 0.9rem;
-      }
-      
-      #weather-description, #weather-location {
-        font-size: 0.7rem;
+      #weather-temp, #weather-description, #weather-location {
+        font-size: 0.8rem;
         min-width: auto;
-        flex: 1 0 100%;
+        width: 100%;
         text-align: center;
+      }
+      
+      #color-picker {
+        padding: 15px;
+        width: 260px;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .countdown {
+        gap: 0.6rem;
+      }
+      
+      h1 {
+        font-size: clamp(1.8rem, 6vw, 2.5rem);
+        margin-bottom: 2rem;
+      }
+      
+      .countdown div {
+        min-width: 60px;
       }
       
       #settings-menu {
         bottom: 70px;
         right: 10px;
         padding: 10px;
-        gap: 8px;
-      }
-      
-      .button {
-        padding: 6px 10px;
-        font-size: 0.9rem;
       }
     }
   </style>
@@ -336,8 +363,6 @@
   ⚙
 </button>
 
-<button id="show-buttons" aria-label="Show Buttons">⋯</button>
-
 <div id="settings-menu" role="region" aria-label="Settings Menu">
   <button class="button" onclick="toggleSnow()">Toggle Snow</button>
   <button class="button" onclick="toggleFullscreen(this)">Fullscreen</button>
@@ -346,88 +371,116 @@
   <label class="button" onclick="document.getElementById('bg-upload').click()">Upload Background</label>
   <input type="file" id="bg-upload" accept="image/*" onchange="handleImageUpload(event)">
   <button class="button active" id="weather-toggle" onclick="toggleWeather()">Weather Widget</button>
-  <button class="button active" id="autohide-toggle" onclick="toggleAutoHide()">Auto-hide Buttons</button>
   <button class="button" onclick="copyLink()">Copy Link</button>
-  <button class="button" onclick="hideSettings()">Hide Buttons</button>
 </div>
 
 <script>
+  // Elements
   const countdown = document.querySelector('.countdown');
   const snowCanvas = document.querySelector('.snow');
   const ctx = snowCanvas.getContext('2d');
   const copyMsg = document.getElementById('copy-msg');
   const settingsMenu = document.getElementById('settings-menu');
   const settingsToggle = document.getElementById('settings-toggle');
-  const showButtonsBtn = document.getElementById('show-buttons');
   const weatherWidget = document.getElementById('weather-widget');
   const weatherToggleBtn = document.getElementById('weather-toggle');
-  const autohideToggleBtn = document.getElementById('autohide-toggle');
   const colorPicker = document.getElementById('color-picker');
   const colorInput = document.getElementById('color-input');
   const colorApply = document.getElementById('color-apply');
   const colorCancel = document.getElementById('color-cancel');
 
+  // State
   let w, h, flakes = [];
   let countdownEnded = false;
   let resetTimeout = null;
   let mouseMoveTimer;
   let weatherEnabled = true;
-  let autoHideEnabled = true;
-  let settingsButtonReady = false;
   let currentColorType = '';
+  let firstClickHandled = false;
 
-  // Initialize with saved preferences
+  // Initialize
+  function init() {
+    loadPreferences();
+    setupEventListeners();
+    initSnow();
+    animateSnow();
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+    
+    // Show settings button only after first interaction
+    document.addEventListener('click', handleFirstInteraction, { once: true });
+  }
+
+  function handleFirstInteraction() {
+    settingsToggle.classList.add('visible');
+    setupAutoHide();
+  }
+
   function loadPreferences() {
     // Load weather preference (default: on)
     const savedWeatherPref = localStorage.getItem('weatherEnabled');
     weatherEnabled = savedWeatherPref !== null ? savedWeatherPref === 'true' : true;
     weatherToggleBtn.classList.toggle('active', weatherEnabled);
     if (weatherEnabled) fetchWeather();
-    
-    // Load auto-hide preference (default: on)
-    const savedAutoHidePref = localStorage.getItem('autoHideEnabled');
-    autoHideEnabled = savedAutoHidePref !== null ? savedAutoHidePref === 'true' : true;
-    autohideToggleBtn.classList.toggle('active', autoHideEnabled);
-    if (!autoHideEnabled) settingsToggle.classList.add('visible');
+  }
+
+  function setupEventListeners() {
+    window.addEventListener('resize', initSnow);
+    settingsToggle.addEventListener('click', handleSettingsToggle);
+    colorApply.addEventListener('click', applyColor);
+    colorCancel.addEventListener('click', () => colorPicker.style.display = 'none');
+    document.addEventListener('click', handleDocumentClick);
   }
 
   function setupAutoHide() {
-    // Clear existing event listeners
-    document.removeEventListener('mousemove', handleMouseMove);
-    document.removeEventListener('click', handleMouseMove);
-    document.removeEventListener('scroll', handleMouseMove);
-    document.removeEventListener('keydown', handleMouseMove);
-
-    if (autoHideEnabled) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('click', handleMouseMove);
-      document.addEventListener('scroll', handleMouseMove);
-      document.addEventListener('keydown', handleMouseMove);
-    } else {
-      settingsToggle.classList.add('visible');
-    }
+    document.addEventListener('mousemove', handleMouseActivity);
+    document.addEventListener('click', handleMouseActivity);
+    document.addEventListener('scroll', handleMouseActivity);
+    document.addEventListener('keydown', handleMouseActivity);
   }
 
-  function handleMouseMove(e) {
-    if (!autoHideEnabled) return;
+  function handleMouseActivity(e) {
+    // Don't hide if interacting with settings
+    if (e.target.closest('#settings-menu') || e.target.closest('#settings-toggle')) return;
     
-    // Don't show settings button if clicking on settings menu
-    if (e.target.closest('#settings-menu') || e.target.closest('#settings-toggle')) {
-      return;
-    }
-    
-    // Show settings button
     settingsToggle.classList.add('visible');
-    
-    // Clear any existing timer
     clearTimeout(mouseMoveTimer);
-    
-    // Hide after 3 seconds of inactivity
     mouseMoveTimer = setTimeout(() => {
       if (!settingsMenu.style.display || settingsMenu.style.display === 'none') {
         settingsToggle.classList.remove('visible');
       }
     }, 3000);
+  }
+
+  function handleDocumentClick(e) {
+    // Close settings when clicking outside
+    if (settingsMenu.style.display === 'flex' && 
+        !e.target.closest('#settings-menu') && 
+        !e.target.closest('#settings-toggle')) {
+      toggleSettingsMenu();
+    }
+    
+    // Close color picker when clicking outside
+    if (colorPicker.style.display === 'flex' && !e.target.closest('#color-picker')) {
+      colorPicker.style.display = 'none';
+    }
+  }
+
+  function handleSettingsToggle() {
+    if (!firstClickHandled) {
+      firstClickHandled = true;
+      return;
+    }
+    toggleSettingsMenu();
+  }
+
+  function toggleSettingsMenu() {
+    if (settingsMenu.style.display === 'flex') {
+      settingsMenu.style.display = 'none';
+    } else {
+      settingsMenu.style.display = 'flex';
+    }
+    handleMouseActivity({target: {closest: () => false}});
   }
 
   function initSnow() {
@@ -482,12 +535,9 @@
     if (diff <= 0 && !countdownEnded) {
       countdownEnded = true;
       showConfetti();
-
-      resetTimeout = setTimeout(() => {
-        countdownEnded = false;
-        updateCountdown();
-      }, 5 * 60 * 1000);
-
+      setTimeout(() => {
+        location.reload(); // Auto-restart when countdown completes
+      }, 5000);
       return;
     }
 
@@ -546,13 +596,6 @@
     }
   }
 
-  function toggleAutoHide() {
-    autoHideEnabled = !autoHideEnabled;
-    autohideToggleBtn.classList.toggle('active', autoHideEnabled);
-    localStorage.setItem('autoHideEnabled', autoHideEnabled);
-    setupAutoHide();
-  }
-
   function toggleSnow() {
     snowCanvas.style.display = (snowCanvas.style.display === 'none') ? 'block' : 'none';
   }
@@ -574,12 +617,13 @@
   }
 
   function applyColor() {
+    const color = colorInput.value;
     if (currentColorType === 'background') {
-      document.body.style.backgroundColor = colorInput.value;
+      document.body.style.backgroundColor = color;
     } else {
-      document.body.style.color = colorInput.value;
-      document.getElementById('weather-widget').style.color = colorInput.value;
-      document.getElementById('weather-widget').style.borderColor = colorInput.value;
+      document.body.style.color = color;
+      weatherWidget.style.color = color;
+      weatherWidget.style.borderColor = color;
     }
     colorPicker.style.display = 'none';
   }
@@ -591,7 +635,6 @@
       document.body.style.backgroundSize = 'cover';
       document.body.style.backgroundPosition = 'center';
       document.body.style.backgroundRepeat = 'no-repeat';
-      document.body.style.color = '#fff';
     };
     reader.readAsDataURL(e.target.files[0]);
   }
@@ -603,99 +646,13 @@
     });
   }
 
-  function hideSettings() {
-    settingsMenu.classList.add('fade-out');
-    settingsToggle.classList.add('fade-out');
-    setTimeout(() => {
-      settingsMenu.style.display = 'none';
-      settingsToggle.style.display = 'none';
-      settingsMenu.classList.remove('fade-out');
-      settingsToggle.classList.remove('fade-out');
-      showButtonsBtn.style.display = 'flex';
-      showButtonsBtn.style.opacity = '0';
-      setTimeout(() => {
-        showButtonsBtn.style.opacity = '0.15';
-      }, 20);
-    }, 500);
-  }
-
-  // Close settings when clicking anywhere
-  document.addEventListener('click', function(e) {
-    // If clicking outside settings menu and not on the toggle button
-    if (settingsMenu.style.display === 'flex' && 
-        !e.target.closest('#settings-menu') && 
-        !e.target.closest('#settings-toggle')) {
-      // Simulate clicking the settings button again
-      if (settingsButtonReady) {
-        settingsToggle.click();
-      }
-    }
-    
-    // If clicking outside color picker
-    if (colorPicker.style.display === 'flex' && 
-        !e.target.closest('#color-picker')) {
-      colorPicker.style.display = 'none';
-    }
-  });
-
-  showButtonsBtn.onclick = () => {
-    showButtonsBtn.style.opacity = '0';
-    setTimeout(() => {
-      showButtonsBtn.style.display = 'none';
-      settingsMenu.style.display = 'flex';
-      settingsToggle.style.display = 'flex';
-      settingsMenu.style.opacity = '0';
-      settingsToggle.style.opacity = '0';
-      setTimeout(() => {
-        settingsMenu.style.opacity = '1';
-        settingsToggle.style.opacity = '1';
-      }, 20);
-    }, 300);
-  };
-
-  settingsToggle.onclick = function() {
-    if (!settingsButtonReady) {
-      settingsButtonReady = true;
-      return;
-    }
-    
-    if (settingsMenu.style.display === 'flex' || settingsMenu.style.display === '') {
-      settingsMenu.style.opacity = '0';
-      setTimeout(() => {
-        settingsMenu.style.display = 'none';
-      }, 500);
-    } else {
-      settingsMenu.style.display = 'flex';
-      settingsMenu.style.opacity = '0';
-      setTimeout(() => {
-        settingsMenu.style.opacity = '1';
-      }, 20);
-    }
-    handleMouseMove({target: {closest: () => false}});
-  };
-
-  colorApply.onclick = applyColor;
-  colorCancel.onclick = function() {
-    colorPicker.style.display = 'none';
-  };
-
   function showConfetti() {
     console.log("Countdown complete! 🎉");
   }
 
-  // Initialize everything
-  setInterval(updateCountdown, 1000);
-  updateCountdown();
-  window.addEventListener('resize', initSnow);
-  initSnow();
-  animateSnow();
-  loadPreferences();
-  setupAutoHide();
-  
-  // Make settings button work only on second press after refresh
-  setTimeout(() => {
-    settingsButtonReady = true;
-  }, 0);
+  // Start everything
+  init();
 </script>
 </body>
+</html>
 </html>
