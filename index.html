@@ -43,17 +43,17 @@
     }
 
     h1 {
-      font-size: clamp(1.5rem, 6vw, 4rem);
-      margin-bottom: 1.5rem;
+      font-size: min(6vw, 4rem);
+      margin-bottom: min(3vw, 2rem);
       letter-spacing: 0.02em;
       white-space: nowrap;
     }
 
     .countdown {
       display: flex;
-      gap: 1rem;
+      gap: min(2vw, 2rem);
       justify-content: center;
-      margin-bottom: 1rem;
+      margin-bottom: min(3vw, 2rem);
     }
 
     .countdown-block {
@@ -64,7 +64,7 @@
     }
 
     .countdown .value {
-      font-size: clamp(1.5rem, 8vw, 3rem);
+      font-size: min(8vw, 5rem);
       line-height: 1;
       min-width: 2ch;
       text-align: center;
@@ -72,7 +72,7 @@
     }
 
     .countdown .label {
-      font-size: clamp(0.6rem, 3vw, 1rem);
+      font-size: min(3vw, 1.5rem);
       opacity: 0.7;
       color: inherit;
       text-transform: capitalize;
@@ -90,8 +90,8 @@
       z-index: 0;
     }
 
-    /* Settings Button */
-    #settings-toggle {
+    /* Settings Button - Desktop */
+    #settings-toggle.desktop {
       position: fixed;
       bottom: 20px;
       right: 20px;
@@ -103,7 +103,28 @@
       height: 50px;
       cursor: pointer;
       z-index: 100;
-      display: flex;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.3s ease;
+      user-select: none;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+
+    /* Settings Button - Mobile */
+    #settings-toggle.mobile {
+      position: fixed;
+      bottom: 15px;
+      right: 15px;
+      background-color: rgba(0,0,0,0.7);
+      color: #17D860;
+      border: 2px solid #17D860;
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      cursor: pointer;
+      z-index: 100;
+      display: none;
       justify-content: center;
       align-items: center;
       transition: all 0.3s ease;
@@ -186,8 +207,7 @@
       display: none;
       flex-direction: column;
       gap: 15px;
-      width: 300px;
-      max-width: 90vw;
+      width: min(80vw, 350px);
       box-shadow: 0 4px 30px rgba(0,0,0,0.8);
     }
 
@@ -199,7 +219,7 @@
 
     #color-input {
       width: 100%;
-      height: 50px;
+      height: min(10vw, 60px);
       cursor: pointer;
     }
 
@@ -269,29 +289,30 @@
       cursor: pointer;
     }
 
-    /* Responsive Adjustments */
-    @media (min-width: 768px) {
-      .countdown {
-        gap: 1.5rem;
+    /* Mobile-specific styles */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: min(8vw, 3rem);
       }
       
-      #color-picker {
-        width: 350px;
-        padding: 25px;
+      .countdown .value {
+        font-size: min(10vw, 4rem);
       }
       
-      #color-input {
-        height: 60px;
+      .countdown .label {
+        font-size: min(4vw, 1.2rem);
       }
-    }
-
-    @media (max-width: 480px) {
-      .countdown {
-        gap: 0.7rem;
+      
+      #settings-toggle.desktop {
+        display: none;
+      }
+      
+      #settings-toggle.mobile {
+        display: flex;
       }
       
       #settings-menu {
-        bottom: 75px;
+        bottom: 70px;
         right: 15px;
         padding: 12px;
       }
@@ -308,17 +329,26 @@
       }
     }
 
-    @media (max-width: 360px) {
-      .countdown {
-        gap: 0.5rem;
-      }
-      
+    /* Desktop-specific styles */
+    @media (min-width: 769px) {
       h1 {
-        font-size: 1.3rem;
+        font-size: min(6vw, 5rem);
       }
       
       .countdown .value {
-        font-size: 1.2rem;
+        font-size: min(8vw, 6rem);
+      }
+      
+      .countdown .label {
+        font-size: min(3vw, 2rem);
+      }
+      
+      #settings-toggle.mobile {
+        display: none;
+      }
+      
+      #settings-toggle.desktop {
+        display: flex;
       }
     }
   </style>
@@ -364,7 +394,9 @@
   </div>
 </div>
 
-<button id="settings-toggle"></button>
+<!-- Settings Buttons (one for each device type) -->
+<button id="settings-toggle" class="desktop"></button>
+<button id="settings-toggle" class="mobile"></button>
 
 <div id="settings-menu" role="region" aria-label="Settings Menu">
   <button class="button" onclick="toggleSnow()">Toggle Snow</button>
@@ -386,7 +418,8 @@
   const snowCanvas = document.querySelector('.snow');
   const ctx = snowCanvas.getContext('2d');
   const settingsMenu = document.getElementById('settings-menu');
-  const settingsToggle = document.getElementById('settings-toggle');
+  const settingsToggleDesktop = document.querySelector('#settings-toggle.desktop');
+  const settingsToggleMobile = document.querySelector('#settings-toggle.mobile');
   const weatherWidget = document.getElementById('weather-widget');
   const weatherToggleBtn = document.getElementById('weather-toggle');
   const autohideToggleBtn = document.getElementById('autohide-toggle');
@@ -412,8 +445,12 @@
     updateCountdown();
     setInterval(updateCountdown, 1000);
     
-    // Show settings button immediately
-    settingsToggle.style.display = 'flex';
+    // Show appropriate settings button
+    if (window.innerWidth <= 768) {
+      settingsToggleMobile.style.display = 'flex';
+    } else {
+      settingsToggleDesktop.style.display = 'flex';
+    }
     setupAutoHide();
   }
 
@@ -430,11 +467,24 @@
   }
 
   function setupEventListeners() {
-    window.addEventListener('resize', initSnow);
-    settingsToggle.addEventListener('click', toggleSettingsMenu);
+    window.addEventListener('resize', handleResize);
+    settingsToggleDesktop.addEventListener('click', toggleSettingsMenu);
+    settingsToggleMobile.addEventListener('click', toggleSettingsMenu);
     colorApply.addEventListener('click', applyColor);
     colorCancel.addEventListener('click', () => colorPicker.style.display = 'none');
     document.addEventListener('click', handleDocumentClick);
+  }
+
+  function handleResize() {
+    initSnow();
+    // Switch between mobile/desktop settings button
+    if (window.innerWidth <= 768) {
+      settingsToggleDesktop.style.display = 'none';
+      settingsToggleMobile.style.display = 'flex';
+    } else {
+      settingsToggleMobile.style.display = 'none';
+      settingsToggleDesktop.style.display = 'flex';
+    }
   }
 
   function setupAutoHide() {
@@ -447,13 +497,16 @@
   }
 
   function handleMouseActivity(e) {
-    if (e.target.closest('#settings-menu') || e.target.closest('#settings-toggle')) return;
+    if (e.target.closest('#settings-menu') || 
+        e.target.closest('#settings-toggle.desktop') || 
+        e.target.closest('#settings-toggle.mobile')) return;
     
-    settingsToggle.style.opacity = '1';
+    const activeToggle = window.innerWidth <= 768 ? settingsToggleMobile : settingsToggleDesktop;
+    activeToggle.style.opacity = '1';
     clearTimeout(mouseMoveTimer);
     mouseMoveTimer = setTimeout(() => {
       if (!settingsMenu.style.display || settingsMenu.style.display === 'none') {
-        settingsToggle.style.opacity = '0';
+        activeToggle.style.opacity = '0';
       }
     }, 3000);
   }
@@ -462,7 +515,8 @@
     // Close settings when clicking outside
     if (settingsMenu.style.display === 'flex' && 
         !e.target.closest('#settings-menu') && 
-        !e.target.closest('#settings-toggle')) {
+        !e.target.closest('#settings-toggle.desktop') && 
+        !e.target.closest('#settings-toggle.mobile')) {
       toggleSettingsMenu();
     }
     
@@ -596,7 +650,8 @@
     if (autoHideEnabled) {
       setupAutoHide();
     } else {
-      settingsToggle.style.opacity = '1';
+      const activeToggle = window.innerWidth <= 768 ? settingsToggleMobile : settingsToggleDesktop;
+      activeToggle.style.opacity = '1';
     }
   }
 
