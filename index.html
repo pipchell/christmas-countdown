@@ -42,15 +42,14 @@
     }
 
     h1 {
-      font-size: min(8vw, 4rem);
-      margin-bottom: min(4vw, 2rem);
+      font-size: min(8vw, 3.5rem);
+      margin-bottom: min(4vw, 1.5rem);
       letter-spacing: 0.02em;
       white-space: nowrap;
     }
 
     .countdown {
       display: flex;
-      gap: min(3vw, 1.5rem);
       justify-content: center;
       margin-bottom: min(4vw, 2rem);
       width: 100%;
@@ -66,7 +65,7 @@
     }
 
     .countdown .value {
-      font-size: min(16vw, 8rem); /* Larger on desktop */
+      font-size: min(16vw, 7rem);
       line-height: 1;
       min-width: 2ch;
       text-align: center;
@@ -74,11 +73,11 @@
     }
 
     .countdown .label {
-      font-size: min(5vw, 1.5rem);
+      font-size: min(4.5vw, 1.3rem);
       opacity: 0.8;
       color: inherit;
       text-transform: capitalize;
-      margin-top: 0.5rem;
+      margin-top: 0.3rem;
       min-width: 4ch;
       display: inline-block;
     }
@@ -286,15 +285,14 @@
     /* Mobile-specific adjustments */
     @media (max-width: 768px) {
       h1 {
-        font-size: min(10vw, 3rem);
+        font-size: min(9vw, 2.8rem);
         white-space: normal;
         line-height: 1.2;
-        margin-bottom: min(6vw, 1.5rem);
+        margin-bottom: min(5vw, 1.2rem);
       }
       
       .countdown {
-        gap: min(4vw, 1rem);
-        flex-wrap: wrap;
+        gap: 0.5rem;
       }
       
       .countdown-block {
@@ -303,12 +301,12 @@
       }
       
       .countdown .value {
-        font-size: min(18vw, 5rem);
+        font-size: min(18vw, 4.5rem);
       }
       
       .countdown .label {
-        font-size: min(5vw, 1.2rem);
-        margin-top: 0.3rem;
+        font-size: min(4.5vw, 1rem);
+        margin-top: 0.2rem;
       }
       
       #settings-menu {
@@ -343,17 +341,33 @@
     }
 
     /* Desktop-specific adjustments */
-    @media (min-width: 1024px) {
+    @media (min-width: 769px) {
+      .countdown {
+        gap: 1rem;
+      }
+      
       .countdown .value {
-        font-size: 7rem;
+        font-size: 6.5rem;
       }
       
       .countdown .label {
-        font-size: 1.5rem;
+        font-size: 1.2rem;
+        margin-top: 0.5rem;
       }
       
       h1 {
-        font-size: 3.5rem;
+        font-size: 3rem;
+      }
+    }
+
+    /* Large desktop screens */
+    @media (min-width: 1200px) {
+      .countdown {
+        gap: 1.5rem;
+      }
+      
+      .countdown .value {
+        font-size: 7rem;
       }
     }
   </style>
