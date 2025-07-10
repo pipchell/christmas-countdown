@@ -1,55 +1,47 @@
-Try it now at:
-christmas.rpcgroup.xyz
-
 Christmas Countdown
 A sleek and customizable countdown timer to Christmas with smooth animations and easy-to-use settings — perfect for sharing holiday cheer!
+🔗 Try it now at: christmas.rpcgroup.xyz
 
-Features
-Live countdown to Christmas with days, hours, minutes, and seconds.
-Countdown resets automatically to next year 5 minutes after hitting zero.
-Smooth fading controls with a subtle “show buttons” toggle for minimal distraction.
-Customizable settings panel:
-Toggle snow animation.
-Switch fullscreen mode.
-Change background color.
-Change text color.
-Upload a custom background image.
-Copy the page link to clipboard.
-Accessibility friendly with ARIA labels.
-Stylish and responsive design using the League Spartan font.
-No emojis in UI for a clean professional look.
+https://github.com/pipchell/christmas-countdown/blob/main/screenshot.png?raw=true
 
-How to Use
+Features:
+✅ Live countdown to Christmas with days, hours, minutes, and seconds.
+✅ Auto-reset – Countdown resets to next year 5 minutes after hitting zero.
+✅ Smooth UI controls with a subtle “show buttons” toggle for minimal distraction.
+✅ Customizable settings panel:
+
+Toggle snow animation 
+Switch fullscreen mode 
+Change background & text colors
+Upload a custom background image
+Copy page link to clipboard 
+
+✅ Accessibility-friendly with ARIA labels for screen readers.
+✅ Responsive design (works on mobile & desktop).
+✅ Clean, professional UI with League Spartan font (no emojis in text).
+
+How to Use:
 Open the page in any modern browser.
-Watch the countdown to Christmas update in real time.
-You can change code to make it personalised.
+Watch the countdown update in real time.
+Click the cog icon (bottom-right) to open settings:
+Toggle snow, fullscreen, colors, or upload a background.
+Click "Hide Buttons" for a minimal view (a "..." button reappears to show controls).
+When the countdown hits 0, it waits 5 minutes before resetting for next Christmas.
 
-Click the cog icon in the bottom-right corner to open the settings menu.
-Use the buttons to:
-Toggle snow animation.
-Enter/exit fullscreen.
-Pick colors or upload a background image.
-Copy the link to share.
-To hide the settings buttons, click the Hide Buttons button. A subtle "..." button will appear to show the controls again.
-When the countdown reaches zero, it will wait 5 minutes before resetting for next Christmas.
+Installation & Hosting:
+No backend needed! Just host the index.html on any static service (GitHub Pages, Netlify, Vercel, etc.).
+Or open it locally in your browser.
 
-Installation
-Simply host the HTML file on any static hosting service or open it locally in your browser. No backend needed!
+Customization:
+Change colors & background via the settings panel.
+Edit the code (styles.css / script.js) for deeper personalization.
 
-Customization
-Update the background and text colors via the settings panel.
-Upload any image to personalize the background.
-You can customize styles by editing the CSS directly.
-
-Accessibility
-Countdown updates are announced for screen readers using ARIA live regions.
-Buttons have descriptive ARIA labels for easy navigation.
-
-Future Improvements
-Add confetti animation when countdown finishes.
-Include weather widget and music controls.
-Add more themes and visual effects.
-Implement real 2FA login for personalized experiences.
+Accessibility:
+Screen reader announcements for countdown updates.
+Descriptive ARIA labels on interactive elements.
 
 License
-This project is open source and free to use. Feel free to customize and share!
+MIT License – Free to use, modify, and share!
+
+Spread holiday joy! Try it here | View on GitHub
+Built with HTML, CSS, and JavaScript. No frameworks, no bloat – just festive fun!
