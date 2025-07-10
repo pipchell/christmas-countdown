@@ -42,77 +42,45 @@
     }
 
     h1 {
-      font-size: clamp(1.5rem, 8vw, 3rem);
-      margin-bottom: clamp(1rem, 3vw, 2rem);
+      font-size: min(8vw, 4rem);
+      margin-bottom: min(4vw, 2rem);
       letter-spacing: 0.02em;
-      text-align: center;
-      padding: 0 10px;
+      white-space: nowrap;
     }
 
-    /* Big Countdown (default for desktop) */
-    .countdown-big {
+    .countdown {
       display: flex;
-      gap: clamp(0.5rem, 2vw, 2rem);
+      gap: min(3vw, 1.5rem);
       justify-content: center;
-      margin-bottom: clamp(1rem, 3vw, 2rem);
+      margin-bottom: min(4vw, 2rem);
+      width: 100%;
     }
 
-    .countdown-big .countdown-block {
+    .countdown-block {
       display: flex;
       flex-direction: column;
       align-items: center;
       min-width: 0;
+      flex: 1;
+      max-width: 25%;
     }
 
-    .countdown-big .value {
-      font-size: clamp(2rem, 10vw, 5rem);
+    .countdown .value {
+      font-size: min(16vw, 8rem); /* Larger on desktop */
       line-height: 1;
       min-width: 2ch;
       text-align: center;
+      display: inline-block;
     }
 
-    .countdown-big .label {
-      font-size: clamp(0.8rem, 3vw, 1.5rem);
+    .countdown .label {
+      font-size: min(5vw, 1.5rem);
       opacity: 0.8;
       color: inherit;
       text-transform: capitalize;
       margin-top: 0.5rem;
-    }
-
-    /* Small Countdown (for mobile) */
-    .countdown-small {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: 1fr 1fr;
-      gap: 0.5rem;
-      width: 100%;
-      max-width: 300px;
-      margin-bottom: 1.5rem;
-    }
-
-    .countdown-small .countdown-block {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      padding: 0.5rem;
-    }
-
-    .countdown-small .value {
-      font-size: clamp(1.5rem, 8vw, 3rem);
-      line-height: 1;
-      min-width: 2ch;
-      text-align: right;
-    }
-
-    .countdown-small .label {
-      font-size: clamp(0.9rem, 4vw, 1.2rem);
-      opacity: 0.8;
-      color: inherit;
-      text-transform: capitalize;
-      text-align: left;
-      min-width: 4.5rem;
+      min-width: 4ch;
+      display: inline-block;
     }
 
     canvas.snow {
@@ -143,18 +111,18 @@
       transition: all 0.3s ease;
       user-select: none;
       box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-      -webkit-tap-highlight-color: transparent;
+      opacity: 1 !important;
     }
 
     #settings-toggle::before {
       content: "⚙";
-      font-size: 24px;
-      width: 100%;
-      height: 100%;
+      font-size: 22px;
       display: flex;
       justify-content: center;
       align-items: center;
-      transform: translateY(-1px) translateZ(0); /* Fix iOS centering */
+      width: 100%;
+      height: 100%;
+      transform: translateY(-1px);
     }
 
     #settings-toggle:hover {
@@ -175,7 +143,7 @@
       flex-direction: column;
       gap: 12px;
       z-index: 100;
-      max-width: min(90vw, 300px);
+      max-width: 90vw;
       box-shadow: 0 4px 20px rgba(0,0,0,0.7);
     }
 
@@ -193,7 +161,10 @@
       user-select: none;
       transition: all 0.2s ease;
       text-align: center;
-      -webkit-tap-highlight-color: transparent;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 40px;
     }
 
     .button:hover {
@@ -204,7 +175,7 @@
       background-color: rgba(30, 215, 96, 0.4);
     }
 
-    /* Weather Widget */
+    /* Weather Widget - Mobile Optimized */
     #weather-widget {
       position: fixed;
       bottom: 20px;
@@ -216,7 +187,7 @@
       padding: 8px 12px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       z-index: 50;
       font-size: 0.85rem;
       color: #1ED760;
@@ -240,6 +211,7 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      text-align: center;
     }
 
     #weather-description {
@@ -248,50 +220,140 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      text-align: center;
       font-size: 0.8rem;
     }
 
-    /* Mobile-specific styles */
+    /* Color Inputs */
+    .color-input-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .color-input-container input[type="color"] {
+      width: 40px;
+      height: 40px;
+      border: 2px solid #1ED760;
+      border-radius: 6px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .color-input-container label {
+      flex-grow: 1;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    /* Branding */
+    .branding {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid rgba(30, 215, 96, 0.3);
+    }
+
+    .branding span {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    /* File Upload Button */
+    .file-upload-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    .file-upload-button {
+      width: 100%;
+      text-align: center;
+    }
+
+    #bg-upload {
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+
+    /* Mobile-specific adjustments */
     @media (max-width: 768px) {
+      h1 {
+        font-size: min(10vw, 3rem);
+        white-space: normal;
+        line-height: 1.2;
+        margin-bottom: min(6vw, 1.5rem);
+      }
+      
+      .countdown {
+        gap: min(4vw, 1rem);
+        flex-wrap: wrap;
+      }
+      
+      .countdown-block {
+        min-width: 22%;
+        max-width: 22%;
+      }
+      
+      .countdown .value {
+        font-size: min(18vw, 5rem);
+      }
+      
+      .countdown .label {
+        font-size: min(5vw, 1.2rem);
+        margin-top: 0.3rem;
+      }
+      
+      #settings-menu {
+        bottom: 75px;
+        right: 15px;
+        padding: 12px;
+        width: 85vw;
+      }
+      
       #settings-toggle {
         width: 45px;
         height: 45px;
         bottom: 15px;
         right: 15px;
       }
-
-      #settings-toggle::before {
-        font-size: 22px;
-      }
-
-      #settings-menu {
-        bottom: 70px;
-        right: 15px;
-        padding: 12px;
-      }
-
+      
       .button {
         padding: 10px 12px;
         font-size: 0.95rem;
       }
+      
+      #weather-widget {
+        bottom: 70px;
+        font-size: 0.8rem;
+        padding: 6px 10px;
+        gap: 6px;
+      }
+      
+      #weather-temp {
+        font-size: 0.9rem;
+      }
     }
 
-    @media (max-width: 480px) {
+    /* Desktop-specific adjustments */
+    @media (min-width: 1024px) {
+      .countdown .value {
+        font-size: 7rem;
+      }
+      
+      .countdown .label {
+        font-size: 1.5rem;
+      }
+      
       h1 {
-        font-size: clamp(1.2rem, 6vw, 1.8rem);
-      }
-
-      #weather-widget {
-        flex-direction: column;
-        gap: 4px;
-        padding: 6px 10px;
-      }
-
-      #weather-temp, #weather-description, #weather-location {
-        font-size: 0.75rem;
-        text-align: center;
-        width: 100%;
-        max-width: none;
+        font-size: 3.5rem;
       }
     }
   </style>
@@ -301,43 +363,21 @@
 <canvas class="snow"></canvas>
 <div class="container">
   <h1>Christmas Countdown</h1>
-  
-  <!-- Big Countdown (shown on larger screens) -->
-  <div class="countdown-big" id="countdown-big" aria-live="polite">
+  <div class="countdown" aria-live="polite" aria-atomic="true">
     <div class="countdown-block">
-      <span class="value" id="days-big">--</span>
+      <span class="value" id="days">--</span>
       <span class="label">days</span>
     </div>
     <div class="countdown-block">
-      <span class="value" id="hours-big">--</span>
+      <span class="value" id="hours">--</span>
       <span class="label">hours</span>
     </div>
     <div class="countdown-block">
-      <span class="value" id="minutes-big">--</span>
+      <span class="value" id="minutes">--</span>
       <span class="label">minutes</span>
     </div>
     <div class="countdown-block">
-      <span class="value" id="seconds-big">--</span>
-      <span class="label">seconds</span>
-    </div>
-  </div>
-  
-  <!-- Small Countdown (shown on mobile) -->
-  <div class="countdown-small" id="countdown-small" aria-live="polite" style="display: none;">
-    <div class="countdown-block">
-      <span class="value" id="days-small">--</span>
-      <span class="label">days</span>
-    </div>
-    <div class="countdown-block">
-      <span class="value" id="hours-small">--</span>
-      <span class="label">hours</span>
-    </div>
-    <div class="countdown-block">
-      <span class="value" id="minutes-small">--</span>
-      <span class="label">minutes</span>
-    </div>
-    <div class="countdown-block">
-      <span class="value" id="seconds-small">--</span>
+      <span class="value" id="seconds">--</span>
       <span class="label">seconds</span>
     </div>
   </div>
@@ -357,7 +397,13 @@
   <button class="button" onclick="toggleSnow()">Toggle Snow</button>
   <button class="button" onclick="toggleFullscreen(this)">Fullscreen</button>
   
+  <div class="file-upload-wrapper">
+    <label class="button file-upload-button">Upload Background</label>
+    <input type="file" id="bg-upload" accept="image/*" onchange="handleImageUpload(event)">
+  </div>
+  
   <button class="button active" id="weather-toggle" onclick="toggleWeather()">Weather Widget</button>
+  <button class="button" onclick="copyLink()">Copy Link</button>
   
   <div class="color-input-container">
     <input type="color" id="bg-color" value="#000000" onchange="changeBgColor(this.value)">
@@ -369,11 +415,14 @@
     <label for="text-color">Text Color</label>
   </div>
   
-  <button class="button" onclick="copyLink()">Copy Link</button>
+  <div class="branding">
+    <span>Created By RPCgroup</span>
+  </div>
 </div>
 
 <script>
   // Elements
+  const countdown = document.querySelector('.countdown');
   const snowCanvas = document.querySelector('.snow');
   const ctx = snowCanvas.getContext('2d');
   const settingsMenu = document.getElementById('settings-menu');
@@ -382,8 +431,6 @@
   const weatherToggleBtn = document.getElementById('weather-toggle');
   const bgColorInput = document.getElementById('bg-color');
   const textColorInput = document.getElementById('text-color');
-  const countdownBig = document.getElementById('countdown-big');
-  const countdownSmall = document.getElementById('countdown-small');
 
   // State
   let w, h, flakes = [];
@@ -398,18 +445,6 @@
     animateSnow();
     updateCountdown();
     setInterval(updateCountdown, 1000);
-    checkViewportSize();
-    window.addEventListener('resize', checkViewportSize);
-  }
-
-  function checkViewportSize() {
-    if (window.innerWidth <= 600) {
-      countdownBig.style.display = 'none';
-      countdownSmall.style.display = 'grid';
-    } else {
-      countdownBig.style.display = 'flex';
-      countdownSmall.style.display = 'none';
-    }
   }
 
   function loadPreferences() {
@@ -428,7 +463,6 @@
 
   function handleResize() {
     initSnow();
-    checkViewportSize();
   }
 
   function handleDocumentClick(e) {
@@ -508,90 +542,75 @@
       const hrs = Math.floor(diff / (1000 * 60 * 60)) % 24;
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-      // Update both countdown displays
-      document.getElementById('days-big').textContent = days;
-      document.getElementById('hours-big').textContent = hrs.toString().padStart(2, '0');
-      document.getElementById('minutes-big').textContent = mins.toString().padStart(2, '0');
-      document.getElementById('seconds-big').textContent = secs.toString().padStart(2, '0');
-
-      document.getElementById('days-small').textContent = days;
-      document.getElementById('hours-small').textContent = hrs.toString().padStart(2, '0');
-      document.getElementById('minutes-small').textContent = mins.toString().padStart(2, '0');
-      document.getElementById('seconds-small').textContent = secs.toString().padStart(2, '0');
+      document.getElementById('days').textContent = days;
+      document.getElementById('hours').textContent = hrs.toString().padStart(2, '0');
+      document.getElementById('minutes').textContent = mins.toString().padStart(2, '0');
+      document.getElementById('seconds').textContent = secs.toString().padStart(2, '0');
     }
   }
 
   function fetchWeather() {
     if (!weatherEnabled) return;
     
-    // Simple weather fetch with fallback
-    navigator.geolocation.getCurrentPosition(
-      position => {
-        const lat = position.coords.latitude;
-        const lon = position.coords.longitude;
+    // First try to get approximate location from IP
+    fetch('https://ipapi.co/json/')
+      .then(response => {
+        if (!response.ok) throw new Error('IP location failed');
+        return response.json();
+      })
+      .then(locationData => {
+        const city = locationData.city || "Unknown";
+        const country = locationData.country_name || "";
+        document.getElementById('weather-location').textContent = `${city}, ${country}`;
         
-        fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`)
-          .then(response => response.json())
-          .then(data => {
-            if (data.current_weather) {
-              const temp = Math.round(data.current_weather.temperature);
-              document.getElementById('weather-temp').textContent = `${temp}°`;
-              document.getElementById('weather-description').textContent = getWeatherDescription(data.current_weather.weathercode);
-              document.getElementById('weather-location').textContent = "Your Location";
-              weatherWidget.style.display = 'flex';
+        // Then try to get weather from wttr.in
+        return fetch(`https://wttr.in/${encodeURIComponent(city)}?format=%t+%C&1`);
+      })
+      .then(response => {
+        if (!response.ok) throw new Error('Weather API failed');
+        return response.text();
+      })
+      .then(weatherData => {
+        if (weatherData && weatherData.includes("°")) {
+          const parts = weatherData.split(" ");
+          const temp = parts[0];
+          const description = parts.slice(1).join(" ");
+          
+          document.getElementById('weather-temp').textContent = temp;
+          document.getElementById('weather-description').textContent = description.toLowerCase();
+          weatherWidget.style.display = 'flex';
+        } else {
+          throw new Error('Invalid weather data');
+        }
+      })
+      .catch(error => {
+        console.log("Weather fetch failed, trying geolocation...");
+        // Fallback to browser geolocation
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            position => {
+              const lat = position.coords.latitude;
+              const lon = position.coords.longitude;
+              fetch(`https://wttr.in/?format=%t+%C&1&lat=${lat}&lon=${lon}`)
+                .then(response => response.text())
+                .then(weatherData => {
+                  if (weatherData && weatherData.includes("°")) {
+                    const parts = weatherData.split(" ");
+                    document.getElementById('weather-temp').textContent = parts[0];
+                    document.getElementById('weather-description').textContent = parts.slice(1).join(" ").toLowerCase();
+                    document.getElementById('weather-location').textContent = "Your Location";
+                    weatherWidget.style.display = 'flex';
+                  }
+                });
+            },
+            () => {
+              weatherWidget.style.display = 'none';
             }
-          })
-          .catch(() => {
-            // Fallback to generic message if API fails
-            weatherWidget.style.display = 'flex';
-            document.getElementById('weather-temp').textContent = "--°";
-            document.getElementById('weather-description').textContent = "Weather";
-            document.getElementById('weather-location').textContent = "Available";
-          });
-      },
-      () => {
-        // If geolocation is denied
-        weatherWidget.style.display = 'flex';
-        document.getElementById('weather-temp').textContent = "--°";
-        document.getElementById('weather-description').textContent = "Enable";
-        document.getElementById('weather-location').textContent = "Location";
-      }
-    );
-  }
-
-  function getWeatherDescription(code) {
-    // Simplified weather code descriptions
-    const weatherMap = {
-      0: 'clear sky',
-      1: 'mostly clear',
-      2: 'partly cloudy',
-      3: 'overcast',
-      45: 'fog',
-      48: 'fog',
-      51: 'light drizzle',
-      53: 'drizzle',
-      55: 'heavy drizzle',
-      56: 'freezing drizzle',
-      57: 'freezing drizzle',
-      61: 'light rain',
-      63: 'rain',
-      65: 'heavy rain',
-      66: 'freezing rain',
-      67: 'freezing rain',
-      71: 'light snow',
-      73: 'snow',
-      75: 'heavy snow',
-      77: 'snow grains',
-      80: 'light showers',
-      81: 'showers',
-      82: 'heavy showers',
-      85: 'light snow',
-      86: 'heavy snow',
-      95: 'thunderstorm',
-      96: 'thunderstorm',
-      99: 'thunderstorm'
-    };
-    return weatherMap[code] || 'weather';
+          );
+        } else {
+          weatherWidget.style.display = 'none';
+        }
+      });
   }
 
   function toggleWeather() {
@@ -630,6 +649,20 @@
       btn.style.color = color;
       btn.style.borderColor = color;
     });
+  }
+
+  function handleImageUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = () => {
+      document.body.style.backgroundImage = `url('${reader.result}')`;
+      document.body.style.backgroundSize = 'cover';
+      document.body.style.backgroundPosition = 'center';
+      document.body.style.backgroundRepeat = 'no-repeat';
+    };
+    reader.readAsDataURL(file);
   }
 
   function copyLink() {
