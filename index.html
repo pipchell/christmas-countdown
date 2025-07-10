@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Christmas Countdown</title>
-  <link rel="icon" href="logo.png" type="image/png" />
   <style>
     @font-face {
       font-family: 'League Spartan';
@@ -24,7 +23,7 @@
       font-family: 'League Spartan', sans-serif;
       font-weight: bold;
       background-color: #000;
-      color: #17D860;
+      color: #1ED760; /* Improved green for better visibility */
       overflow: hidden;
       touch-action: manipulation;
     }
@@ -43,17 +42,17 @@
     }
 
     h1 {
-      font-size: min(6vw, 4rem);
-      margin-bottom: min(3vw, 2rem);
+      font-size: min(8vw, 4rem);
+      margin-bottom: min(4vw, 2rem);
       letter-spacing: 0.02em;
       white-space: nowrap;
     }
 
     .countdown {
       display: flex;
-      gap: min(2vw, 2rem);
+      gap: min(3vw, 1.5rem);
       justify-content: center;
-      margin-bottom: min(3vw, 2rem);
+      margin-bottom: min(4vw, 2rem);
     }
 
     .countdown-block {
@@ -64,7 +63,7 @@
     }
 
     .countdown .value {
-      font-size: min(8vw, 5rem);
+      font-size: min(12vw, 5rem);
       line-height: 1;
       min-width: 2ch;
       text-align: center;
@@ -72,8 +71,8 @@
     }
 
     .countdown .label {
-      font-size: min(3vw, 1.5rem);
-      opacity: 0.7;
+      font-size: min(5vw, 1.5rem);
+      opacity: 0.8;
       color: inherit;
       text-transform: capitalize;
       margin-top: 0.5rem;
@@ -90,46 +89,26 @@
       z-index: 0;
     }
 
-    /* Settings Button - Desktop */
-    #settings-toggle.desktop {
+    /* Settings Button */
+    #settings-toggle {
       position: fixed;
       bottom: 20px;
       right: 20px;
       background-color: rgba(0,0,0,0.7);
-      color: #17D860;
-      border: 2px solid #17D860;
+      color: #1ED760;
+      border: 2px solid #1ED760;
       border-radius: 50%;
       width: 50px;
       height: 50px;
       cursor: pointer;
       z-index: 100;
-      display: none;
+      display: flex;
       justify-content: center;
       align-items: center;
       transition: all 0.3s ease;
       user-select: none;
       box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-    }
-
-    /* Settings Button - Mobile */
-    #settings-toggle.mobile {
-      position: fixed;
-      bottom: 15px;
-      right: 15px;
-      background-color: rgba(0,0,0,0.7);
-      color: #17D860;
-      border: 2px solid #17D860;
-      border-radius: 50%;
-      width: 45px;
-      height: 45px;
-      cursor: pointer;
-      z-index: 100;
-      display: none;
-      justify-content: center;
-      align-items: center;
-      transition: all 0.3s ease;
-      user-select: none;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+      opacity: 1 !important; /* Always visible */
     }
 
     #settings-toggle::before {
@@ -145,7 +124,7 @@
 
     #settings-toggle:hover {
       transform: scale(1.1);
-      background-color: rgba(23, 216, 96, 0.2);
+      background-color: rgba(30, 215, 96, 0.2);
     }
 
     /* Settings Menu */
@@ -154,7 +133,7 @@
       bottom: 80px;
       right: 20px;
       background-color: rgba(0,0,0,0.9);
-      border: 2px solid #17D860;
+      border: 2px solid #1ED760;
       border-radius: 12px;
       padding: 15px;
       display: none;
@@ -168,11 +147,11 @@
     .button {
       font-family: 'League Spartan', sans-serif;
       font-weight: bold;
-      padding: 10px 15px;
+      padding: 12px 15px;
       font-size: 1rem;
-      color: #17D860;
+      color: #1ED760;
       background-color: rgba(0,0,0,0.6);
-      border: 2px solid #17D860;
+      border: 2px solid #1ED760;
       border-radius: 8px;
       cursor: pointer;
       width: 100%;
@@ -186,11 +165,60 @@
     }
 
     .button:hover {
-      background-color: rgba(23, 216, 96, 0.3);
+      background-color: rgba(30, 215, 96, 0.3);
     }
 
     .button.active {
-      background-color: rgba(23, 216, 96, 0.4);
+      background-color: rgba(30, 215, 96, 0.4);
+    }
+
+    /* Weather Widget - Mobile Optimized */
+    #weather-widget {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(0, 0, 0, 0.7);
+      border: 2px solid #1ED760;
+      border-radius: 12px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 50;
+      font-size: 0.85rem;
+      color: #1ED760;
+      max-width: 95vw;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    #weather-temp {
+      font-weight: bold;
+      font-size: 1rem;
+      min-width: 40px;
+      text-align: center;
+    }
+
+    #weather-location {
+      opacity: 0.9;
+      font-size: 0.8rem;
+      max-width: 120px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      text-align: center;
+    }
+
+    #weather-description {
+      text-transform: capitalize;
+      max-width: 100px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      text-align: center;
+      font-size: 0.8rem;
     }
 
     /* Color Inputs */
@@ -204,7 +232,7 @@
     .color-input-container input[type="color"] {
       width: 40px;
       height: 40px;
-      border: 2px solid #17D860;
+      border: 2px solid #1ED760;
       border-radius: 6px;
       cursor: pointer;
       flex-shrink: 0;
@@ -213,6 +241,7 @@
     .color-input-container label {
       flex-grow: 1;
       text-align: left;
+      font-size: 0.9rem;
     }
 
     /* Branding */
@@ -222,62 +251,12 @@
       gap: 10px;
       margin-top: 15px;
       padding-top: 15px;
-      border-top: 1px solid rgba(23, 216, 96, 0.3);
-    }
-
-    .branding img {
-      width: 30px;
-      height: 30px;
+      border-top: 1px solid rgba(30, 215, 96, 0.3);
     }
 
     .branding span {
       font-size: 0.9rem;
       opacity: 0.8;
-    }
-
-    /* Weather Widget */
-    #weather-widget {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: rgba(0, 0, 0, 0.7);
-      border: 2px solid #17D860;
-      border-radius: 12px;
-      padding: 10px 15px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      z-index: 50;
-      font-size: 0.9rem;
-      color: #17D860;
-      max-width: 95vw;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-    }
-
-    #weather-temp {
-      font-weight: bold;
-      font-size: 1.1rem;
-      min-width: 45px;
-      text-align: center;
-    }
-
-    #weather-location {
-      opacity: 0.9;
-      font-size: 0.85rem;
-      min-width: 100px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      text-align: center;
-    }
-
-    #weather-description {
-      text-transform: capitalize;
-      min-width: 90px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      text-align: center;
-      font-size: 0.85rem;
     }
 
     /* File Upload Button */
@@ -301,66 +280,43 @@
       cursor: pointer;
     }
 
-    /* Mobile-specific styles */
+    /* Mobile-specific adjustments */
     @media (max-width: 768px) {
       h1 {
-        font-size: min(8vw, 3rem);
+        font-size: min(10vw, 3rem);
+        white-space: normal;
+        line-height: 1.2;
+      }
+      
+      .countdown {
+        gap: min(4vw, 1rem);
       }
       
       .countdown .value {
-        font-size: min(10vw, 4rem);
+        font-size: min(14vw, 4rem);
       }
       
       .countdown .label {
-        font-size: min(4vw, 1.2rem);
-      }
-      
-      #settings-toggle.desktop {
-        display: none;
-      }
-      
-      #settings-toggle.mobile {
-        display: flex;
+        font-size: min(6vw, 1.2rem);
       }
       
       #settings-menu {
-        bottom: 70px;
+        bottom: 75px;
         right: 15px;
         padding: 12px;
+        width: 85vw;
       }
       
-      #weather-widget {
-        flex-direction: column;
-        gap: 5px;
-        padding: 8px 12px;
+      #settings-toggle {
+        width: 45px;
+        height: 45px;
+        bottom: 15px;
+        right: 15px;
       }
       
-      #weather-temp, #weather-description, #weather-location {
-        font-size: 0.8rem;
-        width: 100%;
-      }
-    }
-
-    /* Desktop-specific styles */
-    @media (min-width: 769px) {
-      h1 {
-        font-size: min(6vw, 5rem);
-      }
-      
-      .countdown .value {
-        font-size: min(8vw, 6rem);
-      }
-      
-      .countdown .label {
-        font-size: min(3vw, 2rem);
-      }
-      
-      #settings-toggle.mobile {
-        display: none;
-      }
-      
-      #settings-toggle.desktop {
-        display: flex;
+      .button {
+        padding: 10px 12px;
+        font-size: 0.95rem;
       }
     }
   </style>
@@ -397,9 +353,8 @@
   <div id="weather-location"></div>
 </div>
 
-<!-- Settings Buttons (one for each device type) -->
-<button id="settings-toggle" class="desktop"></button>
-<button id="settings-toggle" class="mobile"></button>
+<!-- Settings Button -->
+<button id="settings-toggle" aria-label="Settings"></button>
 
 <div id="settings-menu" role="region" aria-label="Settings Menu">
   <button class="button" onclick="toggleSnow()">Toggle Snow</button>
@@ -411,7 +366,6 @@
   </div>
   
   <button class="button active" id="weather-toggle" onclick="toggleWeather()">Weather Widget</button>
-  <button class="button active" id="autohide-toggle" onclick="toggleAutoHide()">Auto-hide Buttons</button>
   <button class="button" onclick="copyLink()">Copy Link</button>
   
   <div class="color-input-container">
@@ -420,12 +374,11 @@
   </div>
   
   <div class="color-input-container">
-    <input type="color" id="text-color" value="#17D860" onchange="changeTextColor(this.value)">
+    <input type="color" id="text-color" value="#1ED760" onchange="changeTextColor(this.value)">
     <label for="text-color">Text Color</label>
   </div>
   
   <div class="branding">
-    <img src="logo.png" alt="RPCgroup Logo">
     <span>Created By RPCgroup</span>
   </div>
 </div>
@@ -436,20 +389,16 @@
   const snowCanvas = document.querySelector('.snow');
   const ctx = snowCanvas.getContext('2d');
   const settingsMenu = document.getElementById('settings-menu');
-  const settingsToggleDesktop = document.querySelector('#settings-toggle.desktop');
-  const settingsToggleMobile = document.querySelector('#settings-toggle.mobile');
+  const settingsToggle = document.getElementById('settings-toggle');
   const weatherWidget = document.getElementById('weather-widget');
   const weatherToggleBtn = document.getElementById('weather-toggle');
-  const autohideToggleBtn = document.getElementById('autohide-toggle');
   const bgColorInput = document.getElementById('bg-color');
   const textColorInput = document.getElementById('text-color');
 
   // State
   let w, h, flakes = [];
   let countdownEnded = false;
-  let mouseMoveTimer;
   let weatherEnabled = true;
-  let autoHideEnabled = true;
 
   // Initialize
   function init() {
@@ -459,14 +408,6 @@
     animateSnow();
     updateCountdown();
     setInterval(updateCountdown, 1000);
-    
-    // Show appropriate settings button
-    if (window.innerWidth <= 768) {
-      settingsToggleMobile.style.display = 'flex';
-    } else {
-      settingsToggleDesktop.style.display = 'flex';
-    }
-    setupAutoHide();
   }
 
   function loadPreferences() {
@@ -475,68 +416,29 @@
     weatherEnabled = savedWeatherPref !== null ? savedWeatherPref === 'true' : true;
     weatherToggleBtn.classList.toggle('active', weatherEnabled);
     if (weatherEnabled) fetchWeather();
-    
-    const savedAutoHidePref = localStorage.getItem('autoHideEnabled');
-    autoHideEnabled = savedAutoHidePref !== null ? savedAutoHidePref === 'true' : true;
-    autohideToggleBtn.classList.toggle('active', autoHideEnabled);
   }
 
   function setupEventListeners() {
     window.addEventListener('resize', handleResize);
-    settingsToggleDesktop.addEventListener('click', toggleSettingsMenu);
-    settingsToggleMobile.addEventListener('click', toggleSettingsMenu);
+    settingsToggle.addEventListener('click', toggleSettingsMenu);
     document.addEventListener('click', handleDocumentClick);
   }
 
   function handleResize() {
     initSnow();
-    // Switch between mobile/desktop settings button
-    if (window.innerWidth <= 768) {
-      settingsToggleDesktop.style.display = 'none';
-      settingsToggleMobile.style.display = 'flex';
-    } else {
-      settingsToggleMobile.style.display = 'none';
-      settingsToggleDesktop.style.display = 'flex';
-    }
-  }
-
-  function setupAutoHide() {
-    if (!autoHideEnabled) return;
-    
-    document.addEventListener('mousemove', handleMouseActivity);
-    document.addEventListener('click', handleMouseActivity);
-    document.addEventListener('scroll', handleMouseActivity);
-    document.addEventListener('keydown', handleMouseActivity);
-  }
-
-  function handleMouseActivity(e) {
-    if (e.target.closest('#settings-menu') || 
-        e.target.closest('#settings-toggle.desktop') || 
-        e.target.closest('#settings-toggle.mobile')) return;
-    
-    const activeToggle = window.innerWidth <= 768 ? settingsToggleMobile : settingsToggleDesktop;
-    activeToggle.style.opacity = '1';
-    clearTimeout(mouseMoveTimer);
-    mouseMoveTimer = setTimeout(() => {
-      if (!settingsMenu.style.display || settingsMenu.style.display === 'none') {
-        activeToggle.style.opacity = '0';
-      }
-    }, 3000);
   }
 
   function handleDocumentClick(e) {
     // Close settings when clicking outside
     if (settingsMenu.style.display === 'flex' && 
         !e.target.closest('#settings-menu') && 
-        !e.target.closest('#settings-toggle.desktop') && 
-        !e.target.closest('#settings-toggle.mobile')) {
+        !e.target.closest('#settings-toggle')) {
       toggleSettingsMenu();
     }
   }
 
   function toggleSettingsMenu() {
     settingsMenu.style.display = settingsMenu.style.display === 'flex' ? 'none' : 'flex';
-    handleMouseActivity({target: {closest: () => false}});
   }
 
   function initSnow() {
@@ -577,7 +479,9 @@
   }
 
   function animateSnow() {
-    drawSnow();
+    if (snowCanvas.style.display !== 'none') {
+      drawSnow();
+    }
     requestAnimationFrame(animateSnow);
   }
 
@@ -611,16 +515,24 @@
   function fetchWeather() {
     if (!weatherEnabled) return;
     
+    // First try to get approximate location from IP
     fetch('https://ipapi.co/json/')
-      .then(response => response.json())
+      .then(response => {
+        if (!response.ok) throw new Error('IP location failed');
+        return response.json();
+      })
       .then(locationData => {
         const city = locationData.city || "Unknown";
         const country = locationData.country_name || "";
         document.getElementById('weather-location').textContent = `${city}, ${country}`;
         
-        return fetch(`https://wttr.in/${city}?format=%t+%C`);
+        // Then try to get weather from wttr.in
+        return fetch(`https://wttr.in/${encodeURIComponent(city)}?format=%t+%C&1`);
       })
-      .then(response => response.text())
+      .then(response => {
+        if (!response.ok) throw new Error('Weather API failed');
+        return response.text();
+      })
       .then(weatherData => {
         if (weatherData && weatherData.includes("°")) {
           const parts = weatherData.split(" ");
@@ -630,11 +542,37 @@
           document.getElementById('weather-temp').textContent = temp;
           document.getElementById('weather-description').textContent = description.toLowerCase();
           weatherWidget.style.display = 'flex';
+        } else {
+          throw new Error('Invalid weather data');
         }
       })
       .catch(error => {
-        console.error("Error fetching weather:", error);
-        weatherWidget.style.display = 'none';
+        console.log("Weather fetch failed, trying geolocation...");
+        // Fallback to browser geolocation
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            position => {
+              const lat = position.coords.latitude;
+              const lon = position.coords.longitude;
+              fetch(`https://wttr.in/?format=%t+%C&1&lat=${lat}&lon=${lon}`)
+                .then(response => response.text())
+                .then(weatherData => {
+                  if (weatherData && weatherData.includes("°")) {
+                    const parts = weatherData.split(" ");
+                    document.getElementById('weather-temp').textContent = parts[0];
+                    document.getElementById('weather-description').textContent = parts.slice(1).join(" ").toLowerCase();
+                    document.getElementById('weather-location').textContent = "Your Location";
+                    weatherWidget.style.display = 'flex';
+                  }
+                });
+            },
+            () => {
+              weatherWidget.style.display = 'none';
+            }
+          );
+        } else {
+          weatherWidget.style.display = 'none';
+        }
       });
   }
 
@@ -645,24 +583,6 @@
     weatherEnabled ? fetchWeather() : (weatherWidget.style.display = 'none');
   }
 
-  function toggleAutoHide() {
-    autoHideEnabled = !autoHideEnabled;
-    autohideToggleBtn.classList.toggle('active', autoHideEnabled);
-    localStorage.setItem('autoHideEnabled', autoHideEnabled);
-    
-    document.removeEventListener('mousemove', handleMouseActivity);
-    document.removeEventListener('click', handleMouseActivity);
-    document.removeEventListener('scroll', handleMouseActivity);
-    document.removeEventListener('keydown', handleMouseActivity);
-    
-    if (autoHideEnabled) {
-      setupAutoHide();
-    } else {
-      const activeToggle = window.innerWidth <= 768 ? settingsToggleMobile : settingsToggleDesktop;
-      activeToggle.style.opacity = '1';
-    }
-  }
-
   function toggleSnow() {
     snowCanvas.style.display = snowCanvas.style.display === 'none' ? 'block' : 'none';
   }
@@ -670,7 +590,7 @@
   function toggleFullscreen(btn) {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen();
-      btn.textContent = 'Minimise';
+      btn.textContent = 'Exit Fullscreen';
     } else {
       document.exitFullscreen();
       btn.textContent = 'Fullscreen';
@@ -679,12 +599,19 @@
 
   function changeBgColor(color) {
     document.body.style.backgroundColor = color;
+    document.body.style.backgroundImage = 'none';
   }
 
   function changeTextColor(color) {
     document.body.style.color = color;
     weatherWidget.style.color = color;
     weatherWidget.style.borderColor = color;
+    settingsToggle.style.color = color;
+    settingsToggle.style.borderColor = color;
+    document.querySelectorAll('.button').forEach(btn => {
+      btn.style.color = color;
+      btn.style.borderColor = color;
+    });
   }
 
   function handleImageUpload(e) {
@@ -703,6 +630,7 @@
 
   function copyLink() {
     navigator.clipboard.writeText(location.href);
+    alert("Link copied to clipboard!");
   }
 
   function showConfetti() {
