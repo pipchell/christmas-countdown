@@ -193,34 +193,46 @@
       background-color: rgba(23, 216, 96, 0.4);
     }
 
-    /* Color Picker */
-    #color-picker {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background-color: rgba(0,0,0,0.95);
-      border: 2px solid #17D860;
-      border-radius: 12px;
-      padding: 20px;
-      z-index: 1000;
-      display: none;
-      flex-direction: column;
-      gap: 15px;
-      width: min(80vw, 350px);
-      box-shadow: 0 4px 30px rgba(0,0,0,0.8);
-    }
-
-    #color-picker-buttons {
+    /* Color Inputs */
+    .color-input-container {
       display: flex;
+      align-items: center;
       gap: 10px;
-      justify-content: center;
+      width: 100%;
     }
 
-    #color-input {
-      width: 100%;
-      height: min(10vw, 60px);
+    .color-input-container input[type="color"] {
+      width: 40px;
+      height: 40px;
+      border: 2px solid #17D860;
+      border-radius: 6px;
       cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .color-input-container label {
+      flex-grow: 1;
+      text-align: left;
+    }
+
+    /* Branding */
+    .branding {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid rgba(23, 216, 96, 0.3);
+    }
+
+    .branding img {
+      width: 30px;
+      height: 30px;
+    }
+
+    .branding span {
+      font-size: 0.9rem;
+      opacity: 0.8;
     }
 
     /* Weather Widget */
@@ -385,15 +397,6 @@
   <div id="weather-location"></div>
 </div>
 
-<!-- Color Picker -->
-<div id="color-picker">
-  <input type="color" id="color-input">
-  <div id="color-picker-buttons">
-    <button class="button" id="color-apply">Apply</button>
-    <button class="button" id="color-cancel">Cancel</button>
-  </div>
-</div>
-
 <!-- Settings Buttons (one for each device type) -->
 <button id="settings-toggle" class="desktop"></button>
 <button id="settings-toggle" class="mobile"></button>
@@ -401,15 +404,30 @@
 <div id="settings-menu" role="region" aria-label="Settings Menu">
   <button class="button" onclick="toggleSnow()">Toggle Snow</button>
   <button class="button" onclick="toggleFullscreen(this)">Fullscreen</button>
-  <button class="button" onclick="showColorPicker('background')">Background Color</button>
-  <button class="button" onclick="showColorPicker('text')">Text Color</button>
+  
+  <div class="color-input-container">
+    <input type="color" id="bg-color" value="#000000" onchange="changeBgColor(this.value)">
+    <label for="bg-color">Background Color</label>
+  </div>
+  
+  <div class="color-input-container">
+    <input type="color" id="text-color" value="#17D860" onchange="changeTextColor(this.value)">
+    <label for="text-color">Text Color</label>
+  </div>
+  
   <div class="file-upload-wrapper">
     <label class="button file-upload-button">Upload Background</label>
     <input type="file" id="bg-upload" accept="image/*" onchange="handleImageUpload(event)">
   </div>
+  
   <button class="button active" id="weather-toggle" onclick="toggleWeather()">Weather Widget</button>
   <button class="button active" id="autohide-toggle" onclick="toggleAutoHide()">Auto-hide Buttons</button>
   <button class="button" onclick="copyLink()">Copy Link</button>
+  
+  <div class="branding">
+    <img src="https://i.ibb.co/0yFj9Sd/browser-icon.png" alt="RPCgroup Logo">
+    <span>Created By RPCgroup</span>
+  </div>
 </div>
 
 <script>
@@ -423,10 +441,8 @@
   const weatherWidget = document.getElementById('weather-widget');
   const weatherToggleBtn = document.getElementById('weather-toggle');
   const autohideToggleBtn = document.getElementById('autohide-toggle');
-  const colorPicker = document.getElementById('color-picker');
-  const colorInput = document.getElementById('color-input');
-  const colorApply = document.getElementById('color-apply');
-  const colorCancel = document.getElementById('color-cancel');
+  const bgColorInput = document.getElementById('bg-color');
+  const textColorInput = document.getElementById('text-color');
 
   // State
   let w, h, flakes = [];
@@ -434,7 +450,6 @@
   let mouseMoveTimer;
   let weatherEnabled = true;
   let autoHideEnabled = true;
-  let currentColorType = '';
 
   // Initialize
   function init() {
@@ -470,8 +485,6 @@
     window.addEventListener('resize', handleResize);
     settingsToggleDesktop.addEventListener('click', toggleSettingsMenu);
     settingsToggleMobile.addEventListener('click', toggleSettingsMenu);
-    colorApply.addEventListener('click', applyColor);
-    colorCancel.addEventListener('click', () => colorPicker.style.display = 'none');
     document.addEventListener('click', handleDocumentClick);
   }
 
@@ -518,11 +531,6 @@
         !e.target.closest('#settings-toggle.desktop') && 
         !e.target.closest('#settings-toggle.mobile')) {
       toggleSettingsMenu();
-    }
-    
-    // Close color picker when clicking outside
-    if (colorPicker.style.display === 'flex' && !e.target.closest('#color-picker')) {
-      colorPicker.style.display = 'none';
     }
   }
 
@@ -669,22 +677,14 @@
     }
   }
 
-  function showColorPicker(type) {
-    currentColorType = type;
-    colorInput.value = type === 'background' ? '#000000' : '#17D860';
-    colorPicker.style.display = 'flex';
+  function changeBgColor(color) {
+    document.body.style.backgroundColor = color;
   }
 
-  function applyColor() {
-    const color = colorInput.value;
-    if (currentColorType === 'background') {
-      document.body.style.backgroundColor = color;
-    } else {
-      document.body.style.color = color;
-      weatherWidget.style.color = color;
-      weatherWidget.style.borderColor = color;
-    }
-    colorPicker.style.display = 'none';
+  function changeTextColor(color) {
+    document.body.style.color = color;
+    weatherWidget.style.color = color;
+    weatherWidget.style.borderColor = color;
   }
 
   function handleImageUpload(e) {
