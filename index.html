@@ -48,17 +48,36 @@
       white-space: nowrap;
     }
 
-    .countdown-box {
-      font-size: min(10vw, 5rem);
-      line-height: 1.2;
-      background-color: rgba(0,0,0,0.5);
-      border: 2px solid #1ED760;
-      border-radius: 12px;
-      padding: 15px 25px;
+    .countdown {
+      display: flex;
+      justify-content: center;
       margin-bottom: min(4vw, 2rem);
-      width: auto;
-      max-width: 90%;
+      width: 100%;
+      gap: 0.3rem; /* Reduced gap between elements */
+    }
+
+    .countdown-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1 1 auto; /* More flexible sizing */
+      min-width: 0; /* Allows text to shrink */
+    }
+
+    .countdown .value {
+      font-size: min(14vw, 6rem); /* Slightly reduced font size */
+      line-height: 1;
       text-align: center;
+      min-width: 2ch;
+    }
+
+    .countdown .label {
+      font-size: min(3.5vw, 1.1rem); /* Slightly reduced font size */
+      opacity: 0.8;
+      color: inherit;
+      text-transform: capitalize;
+      margin-top: 0.1rem; /* Reduced margin */
+      min-width: 4ch;
     }
 
     canvas.snow {
@@ -270,9 +289,22 @@
         margin-bottom: min(5vw, 1.2rem);
       }
       
-      .countdown-box {
-        font-size: min(12vw, 4rem);
-        padding: 12px 20px;
+      .countdown {
+        gap: 0.2rem; /* Even smaller gap on mobile */
+      }
+      
+      .countdown-block {
+        min-width: 22%;
+        max-width: 22%;
+      }
+      
+      .countdown .value {
+        font-size: min(16vw, 4.5rem);
+      }
+      
+      .countdown .label {
+        font-size: min(4vw, 1rem);
+        margin-top: 0.1rem;
       }
       
       #settings-menu {
@@ -305,6 +337,37 @@
         font-size: 0.9rem;
       }
     }
+
+    /* Desktop-specific adjustments */
+    @media (min-width: 769px) {
+      .countdown {
+        gap: 0.5rem; /* Smaller gap on desktop too */
+      }
+      
+      .countdown .value {
+        font-size: 5.5rem;
+      }
+      
+      .countdown .label {
+        font-size: 1.1rem;
+        margin-top: 0.2rem; /* Reduced margin */
+      }
+      
+      h1 {
+        font-size: 3rem;
+      }
+    }
+
+    /* Large desktop screens */
+    @media (min-width: 1200px) {
+      .countdown {
+        gap: 0.7rem;
+      }
+      
+      .countdown .value {
+        font-size: 6rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -312,8 +375,23 @@
 <canvas class="snow"></canvas>
 <div class="container">
   <h1>Christmas Countdown</h1>
-  <div class="countdown-box" id="countdown-display" aria-live="polite" aria-atomic="true">
-    -- days -- hours -- minutes -- seconds
+  <div class="countdown" aria-live="polite" aria-atomic="true">
+    <div class="countdown-block">
+      <span class="value" id="days">--</span>
+      <span class="label">days</span>
+    </div>
+    <div class="countdown-block">
+      <span class="value" id="hours">--</span>
+      <span class="label">hours</span>
+    </div>
+    <div class="countdown-block">
+      <span class="value" id="minutes">--</span>
+      <span class="label">minutes</span>
+    </div>
+    <div class="countdown-block">
+      <span class="value" id="seconds">--</span>
+      <span class="label">seconds</span>
+    </div>
   </div>
 </div>
 
@@ -356,7 +434,7 @@
 
 <script>
   // Elements
-  const countdownDisplay = document.getElementById('countdown-display');
+  const countdown = document.querySelector('.countdown');
   const snowCanvas = document.querySelector('.snow');
   const ctx = snowCanvas.getContext('2d');
   const settingsMenu = document.getElementById('settings-menu');
@@ -476,7 +554,10 @@
       const hrs = Math.floor(diff / (1000 * 60 * 60)) % 24;
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-      countdownDisplay.textContent = `${days} days ${hrs.toString().padStart(2, '0')} hours ${mins.toString().padStart(2, '0')} minutes ${secs.toString().padStart(2, '0')} seconds`;
+      document.getElementById('days').textContent = days;
+      document.getElementById('hours').textContent = hrs.toString().padStart(2, '0');
+      document.getElementById('minutes').textContent = mins.toString().padStart(2, '0');
+      document.getElementById('seconds').textContent = secs.toString().padStart(2, '0');
     }
   }
 
