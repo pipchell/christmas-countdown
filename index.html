@@ -603,6 +603,7 @@
   let weatherEnabled = true;
   let weatherTimeout = null;
   let autoZoomSet = false;
+  let lastWeatherUpdate = 0; // Track last weather update time
 
   // Check if in Arc Search browser
   const isArcSearch = /ArcSearch/i.test(navigator.userAgent);
@@ -817,20 +818,32 @@
     if (isOnline) {
       connectionStatus.className = 'online';
       connectionStatus.title = "Online - Click to check again";
-      // If weather is enabled, try to fetch it
-      if (weatherEnabled) {
+      // Only fetch weather if it's been more than an hour
+      if (weatherEnabled && (Date.now() - lastWeatherUpdate >= 3600000)) {
         fetchWeather();
       }
     } else {
       connectionStatus.className = 'offline';
       connectionStatus.title = "Offline - Click to retry";
-      // Don't show the widget when offline
       weatherWidget.style.display = 'none';
     }
   }
 
   function fetchWeather() {
     if (!weatherEnabled) return;
+    
+    // Check if an hour has passed since last update
+    const now = Date.now();
+    if (now - lastWeatherUpdate < 3600000) { // 3600000ms = 1 hour
+      // If less than an hour has passed, just show the existing data
+      if (document.getElementById('weather-temp').textContent !== '--°') {
+        weatherWidget.style.display = 'flex';
+      }
+      return;
+    }
+    
+    // Update the last update time
+    lastWeatherUpdate = now;
     
     // Show loading state temporarily
     weatherWidget.style.display = 'flex';
@@ -915,6 +928,7 @@
     weatherToggleBtn.classList.toggle('active', weatherEnabled);
     localStorage.setItem('weatherEnabled', weatherEnabled);
     if (weatherEnabled) {
+      lastWeatherUpdate = 0; // Reset timer to force update
       fetchWeather();
     } else {
       weatherWidget.style.display = 'none';
