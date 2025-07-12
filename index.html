@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Christmas Countdown</title>
   <style>
     @font-face {
@@ -25,7 +25,13 @@
       background-color: #000;
       color: #1ED760;
       overflow: hidden;
-      touch-action: manipulation;
+      touch-action: pan-x pan-y;
+    }
+
+    @supports (-webkit-touch-callout: none) {
+      body {
+        -webkit-text-size-adjust: 100%;
+      }
     }
 
     .container {
@@ -39,6 +45,8 @@
       align-items: center;
       text-align: center;
       padding: 0 15px;
+      transform: scale(var(--zoom-level, 1));
+      transform-origin: center;
     }
 
     h1 {
@@ -54,8 +62,6 @@
       margin-bottom: min(4vw, 2rem);
       gap: 0.5rem;
       max-width: 90%;
-      transform: scale(var(--zoom-level, 1));
-      transform-origin: center;
     }
 
     .countdown-block {
@@ -70,10 +76,10 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: min(10vw, 4rem);
+      font-size: min(6vw, 3rem);
       opacity: 0.7;
       height: min(14vw, 5.5rem);
-      padding: 0 0.2rem;
+      padding: 0 0.1rem;
     }
 
     .countdown .value {
@@ -271,6 +277,27 @@
       white-space: nowrap;
     }
 
+    /* Improved check online button */
+    #check-online-btn {
+      position: fixed;
+      top: 35px;
+      right: 10px;
+      background-color: rgba(0,0,0,0.7);
+      color: #1ED760;
+      border: 1px solid #1ED760;
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 10px;
+      z-index: 100;
+      cursor: pointer;
+      display: none;
+    }
+
+    #connection-status:hover + #check-online-btn,
+    #check-online-btn:hover {
+      display: block;
+    }
+
     /* Color Inputs */
     .color-input-container {
       display: flex;
@@ -387,14 +414,14 @@
       }
       
       .countdown {
-        gap: 0.3rem;
+        gap: 0.2rem;
         max-width: 95%;
       }
       
       .countdown-colon {
-        font-size: min(12vw, 3.5rem);
+        font-size: min(5vw, 2.5rem);
         height: min(16vw, 4.5rem);
-        padding: 0 0.1rem;
+        padding: 0;
       }
       
       .countdown .value {
@@ -429,10 +456,17 @@
         font-size: 0.8rem;
         padding: 6px 10px;
         gap: 6px;
+        max-width: 90%;
       }
       
       #weather-temp {
         font-size: 0.9rem;
+        min-width: 35px;
+      }
+      
+      #weather-description, #weather-location {
+        font-size: 0.75rem;
+        max-width: 100px;
       }
     }
 
@@ -443,7 +477,7 @@
       }
       
       .countdown-colon {
-        font-size: 3.5rem;
+        font-size: 3rem;
         height: 5rem;
       }
       
@@ -457,6 +491,34 @@
       
       h1 {
         font-size: 3rem;
+      }
+    }
+    
+    /* Very small screens */
+    @media (max-width: 400px) {
+      .countdown-colon {
+        font-size: min(4vw, 2rem);
+        height: min(14vw, 4rem);
+      }
+      
+      .countdown .value {
+        font-size: min(14vw, 4rem);
+      }
+      
+      #weather-widget {
+        flex-wrap: wrap;
+        justify-content: center;
+        width: auto;
+        max-width: 95%;
+        padding: 6px 8px;
+        bottom: 65px;
+      }
+      
+      #weather-temp, #weather-description, #weather-location {
+        flex: 1 1 auto;
+        min-width: unset;
+        max-width: 30%;
+        font-size: 0.7rem;
       }
     }
   </style>
@@ -491,6 +553,7 @@
 
 <!-- Connection Status Indicator - Now clickable -->
 <div id="connection-status" class="online" title="Online - Click to check connection"></div>
+<button id="check-online-btn" onclick="checkConnection()">Check Online</button>
 
 <!-- Weather Widget -->
 <div id="weather-widget">
@@ -552,11 +615,21 @@
   const bgColorInput = document.getElementById('bg-color');
   const textColorInput = document.getElementById('text-color');
   const connectionStatus = document.getElementById('connection-status');
+  const checkOnlineBtn = document.getElementById('check-online-btn');
 
   // State
   let w, h, flakes = [];
   let countdownEnded = false;
   let weatherEnabled = true;
+  let weatherTimeout = null;
+  let autoZoomSet = false;
+
+  // Check if in Arc Search browser
+  const isArcSearch = /ArcSearch/i.test(navigator.userAgent);
+  if (isArcSearch) {
+    // Add any Arc-specific adjustments here
+    document.documentElement.style.setProperty('overflow', 'auto');
+  }
 
   // Initialize
   function init() {
@@ -569,6 +642,8 @@
     checkConnection();
     setInterval(checkConnection, 5000); // Check every 5 seconds
     setupZoomControl();
+    autoAdjustZoom();
+    window.addEventListener('resize', autoAdjustZoom);
   }
 
   function loadPreferences() {
@@ -588,6 +663,32 @@
     connectionStatus.addEventListener('click', checkConnection);
   }
 
+  function autoAdjustZoom() {
+    if (autoZoomSet) return;
+    
+    const screenWidth = window.innerWidth;
+    let zoomLevel = 1;
+    
+    if (screenWidth < 400) {
+      zoomLevel = 0.8;
+    } else if (screenWidth < 500) {
+      zoomLevel = 0.9;
+    } else if (screenWidth > 1200) {
+      zoomLevel = 1.1;
+    }
+    
+    const zoomSlider = document.getElementById('zoom-slider');
+    const zoomValue = document.getElementById('zoom-value');
+    
+    if (zoomSlider && zoomValue) {
+      zoomSlider.value = zoomLevel;
+      document.documentElement.style.setProperty('--zoom-level', zoomLevel);
+      zoomValue.textContent = `${Math.round(zoomLevel * 100)}%`;
+      localStorage.setItem('countdownZoom', zoomLevel);
+      autoZoomSet = true;
+    }
+  }
+
   function setupZoomControl() {
     const zoomSlider = document.getElementById('zoom-slider');
     const zoomValue = document.getElementById('zoom-value');
@@ -605,6 +706,7 @@
       document.documentElement.style.setProperty('--zoom-level', zoomLevel);
       zoomValue.textContent = `${Math.round(zoomLevel * 100)}%`;
       localStorage.setItem('countdownZoom', zoomLevel);
+      autoZoomSet = true; // User has manually adjusted, don't auto-adjust anymore
     });
   }
 
@@ -700,15 +802,23 @@
 
   function checkConnection() {
     connectionStatus.title = "Checking connection...";
+    checkOnlineBtn.style.display = 'none';
     
     // First try the navigator.onLine property
     if (navigator.onLine) {
       // Double check with a small fetch request
-      fetch('https://httpbin.org/get', { 
-        method: 'HEAD',
-        cache: 'no-store',
-        mode: 'no-cors'
-      })
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Timeout')), 3000)
+      );
+      
+      Promise.race([
+        fetch('https://httpbin.org/get', { 
+          method: 'HEAD',
+          cache: 'no-store',
+          mode: 'no-cors'
+        }),
+        timeoutPromise
+      ])
       .then(() => {
         updateConnectionStatus(true);
         connectionStatus.title = "Online - Click to check again";
@@ -742,6 +852,14 @@
   function fetchWeather() {
     if (!weatherEnabled) return;
     
+    // Set timeout for weather loading
+    if (weatherTimeout) clearTimeout(weatherTimeout);
+    weatherTimeout = setTimeout(() => {
+      if (document.getElementById('weather-description').textContent === 'Loading...') {
+        document.getElementById('weather-description').textContent = 'Not available';
+      }
+    }, 15000);
+    
     // First try to get approximate location from IP
     fetch('https://ipapi.co/json/')
       .then(response => {
@@ -761,6 +879,7 @@
         return response.text();
       })
       .then(weatherData => {
+        clearTimeout(weatherTimeout);
         if (weatherData && weatherData.includes("°")) {
           const parts = weatherData.split(" ");
           const temp = parts[0];
@@ -774,6 +893,7 @@
         }
       })
       .catch(error => {
+        clearTimeout(weatherTimeout);
         console.log("Weather fetch failed, trying geolocation...");
         // Fallback to browser geolocation
         if (navigator.geolocation) {
@@ -794,11 +914,13 @@
                 });
             },
             () => {
-              weatherWidget.style.display = 'none';
+              document.getElementById('weather-description').textContent = 'Not available';
+              weatherWidget.style.display = 'flex';
             }
           );
         } else {
-          weatherWidget.style.display = 'none';
+          document.getElementById('weather-description').textContent = 'Not available';
+          weatherWidget.style.display = 'flex';
         }
       });
   }
@@ -807,7 +929,12 @@
     weatherEnabled = !weatherEnabled;
     weatherToggleBtn.classList.toggle('active', weatherEnabled);
     localStorage.setItem('weatherEnabled', weatherEnabled);
-    weatherEnabled ? fetchWeather() : (weatherWidget.style.display = 'none');
+    if (weatherEnabled) {
+      fetchWeather();
+    } else {
+      weatherWidget.style.display = 'none';
+      if (weatherTimeout) clearTimeout(weatherTimeout);
+    }
   }
 
   function toggleSnow() {
