@@ -184,7 +184,7 @@
       background-color: rgba(30, 215, 96, 0.4);
     }
 
-    /* Weather Widget */
+    /* Weather Widget - Initially hidden */
     #weather-widget {
       position: fixed;
       bottom: 20px;
@@ -194,7 +194,7 @@
       border: 2px solid #1ED760;
       border-radius: 12px;
       padding: 8px 12px;
-      display: flex;
+      display: none; /* Changed from flex to none */
       align-items: center;
       gap: 8px;
       z-index: 50;
@@ -555,8 +555,8 @@
 <div id="connection-status" class="online" title="Online - Click to check connection"></div>
 <button id="check-online-btn" onclick="checkConnection()">Check Online</button>
 
-<!-- Weather Widget -->
-<div id="weather-widget">
+<!-- Weather Widget - Initially hidden -->
+<div id="weather-widget" style="display: none;">
   <div id="weather-temp">--°</div>
   <div id="weather-description">Loading...</div>
   <div id="weather-location"></div>
@@ -836,28 +836,30 @@
   function updateConnectionStatus(isOnline) {
     if (isOnline) {
       connectionStatus.className = 'online';
-      // If weather was disabled due to offline status, try again
-      if (weatherEnabled && weatherWidget.style.display === 'none') {
+      connectionStatus.title = "Online - Click to check again";
+      // If weather is enabled, try to fetch it
+      if (weatherEnabled) {
         fetchWeather();
       }
     } else {
       connectionStatus.className = 'offline';
-      if (weatherEnabled) {
-        weatherWidget.style.display = 'flex';
-        document.getElementById('weather-description').textContent = 'Offline';
-      }
+      connectionStatus.title = "Offline - Click to retry";
+      // Don't show the widget when offline
+      weatherWidget.style.display = 'none';
     }
   }
 
   function fetchWeather() {
     if (!weatherEnabled) return;
     
+    // Show loading state temporarily
+    weatherWidget.style.display = 'flex';
+    document.getElementById('weather-description').textContent = 'Loading...';
+    
     // Set timeout for weather loading
     if (weatherTimeout) clearTimeout(weatherTimeout);
     weatherTimeout = setTimeout(() => {
-      if (document.getElementById('weather-description').textContent === 'Loading...') {
-        document.getElementById('weather-description').textContent = 'Not available';
-      }
+      weatherWidget.style.display = 'none'; // Hide if timeout occurs
     }, 15000);
     
     // First try to get approximate location from IP
@@ -887,7 +889,7 @@
           
           document.getElementById('weather-temp').textContent = temp;
           document.getElementById('weather-description').textContent = description.toLowerCase();
-          weatherWidget.style.display = 'flex';
+          weatherWidget.style.display = 'flex'; // Show only if we have valid data
         } else {
           throw new Error('Invalid weather data');
         }
@@ -909,18 +911,21 @@
                     document.getElementById('weather-temp').textContent = parts[0];
                     document.getElementById('weather-description').textContent = parts.slice(1).join(" ").toLowerCase();
                     document.getElementById('weather-location').textContent = "Your Location";
-                    weatherWidget.style.display = 'flex';
+                    weatherWidget.style.display = 'flex'; // Show only if we have valid data
+                  } else {
+                    weatherWidget.style.display = 'none'; // Hide if no valid data
                   }
+                })
+                .catch(() => {
+                  weatherWidget.style.display = 'none'; // Hide if fetch fails
                 });
             },
             () => {
-              document.getElementById('weather-description').textContent = 'Not available';
-              weatherWidget.style.display = 'flex';
+              weatherWidget.style.display = 'none'; // Hide if geolocation fails
             }
           );
         } else {
-          document.getElementById('weather-description').textContent = 'Not available';
-          weatherWidget.style.display = 'flex';
+          weatherWidget.style.display = 'none'; // Hide if no geolocation support
         }
       });
   }
