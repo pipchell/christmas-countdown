@@ -181,7 +181,7 @@
       background-color: rgba(30, 215, 96, 0.4);
     }
 
-    /* Weather Widget - Initially hidden */
+    /* Weather Widget - Improved for mobile */
     #weather-widget {
       position: fixed;
       bottom: 20px;
@@ -190,30 +190,30 @@
       background-color: rgba(0, 0, 0, 0.7);
       border: 2px solid #1ED760;
       border-radius: 12px;
-      padding: 8px 12px;
-      display: none;
+      padding: 10px 15px;
+      display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       z-index: 50;
-      font-size: 0.85rem;
       color: #1ED760;
       max-width: 95vw;
       box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-      flex-wrap: nowrap;
-      white-space: nowrap;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: auto;
     }
 
     #weather-temp {
       font-weight: bold;
-      font-size: 1rem;
-      min-width: 40px;
+      font-size: 1.1rem;
+      min-width: 45px;
       text-align: center;
     }
 
     #weather-location {
       opacity: 0.9;
-      font-size: 0.8rem;
-      max-width: 150px;
+      font-size: 0.95rem;
+      max-width: 200px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -222,15 +222,15 @@
 
     #weather-description {
       text-transform: capitalize;
-      max-width: 120px;
+      max-width: 150px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
       text-align: center;
-      font-size: 0.8rem;
+      font-size: 0.95rem;
     }
 
-    /* Connection Status - Improved for all browsers */
+    /* Connection Status */
     #connection-status {
       position: fixed;
       top: 10px;
@@ -272,6 +272,27 @@
       padding: 4px 8px;
       font-size: 12px;
       white-space: nowrap;
+    }
+
+    /* Pull-to-refresh indicator */
+    #refresh-indicator {
+      position: fixed;
+      top: -50px;
+      left: 0;
+      width: 100%;
+      height: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: rgba(0,0,0,0.7);
+      color: #1ED760;
+      font-size: 0.9rem;
+      transition: transform 0.3s ease;
+      z-index: 1000;
+    }
+
+    #refresh-indicator.refreshing {
+      transform: translateY(50px);
     }
 
     /* Branding */
@@ -398,27 +419,52 @@
         font-size: 0.95rem;
       }
       
+      /* Weather widget mobile improvements */
       #weather-widget {
-        bottom: 70px;
-        font-size: 0.8rem;
-        padding: 6px 10px;
-        gap: 6px;
-        max-width: 90%;
+        padding: 8px 12px;
+        gap: 8px;
+        bottom: 15px;
+        display: flex !important; /* Force show on mobile */
       }
       
       #weather-temp {
-        font-size: 0.9rem;
-        min-width: 35px;
+        font-size: 1rem;
+        min-width: 40px;
       }
       
       #weather-description, #weather-location {
-        font-size: 0.75rem;
-        max-width: 100px;
+        font-size: 0.9rem;
+        max-width: 120px;
       }
 
       /* Hide fullscreen button on mobile */
       .fullscreen-button {
         display: none !important;
+      }
+    }
+
+    /* Very small screens */
+    @media (max-width: 400px) {
+      .countdown {
+        gap: 0.5rem;
+      }
+      
+      .countdown .value {
+        font-size: min(14vw, 4rem);
+      }
+      
+      #weather-widget {
+        flex-direction: column;
+        gap: 5px;
+        padding: 8px;
+        bottom: 10px;
+      }
+      
+      #weather-temp, #weather-description, #weather-location {
+        max-width: 100%;
+        font-size: 0.85rem;
+        white-space: normal;
+        text-align: center;
       }
     }
 
@@ -440,37 +486,11 @@
         font-size: 3rem;
       }
     }
-    
-    /* Very small screens */
-    @media (max-width: 400px) {
-      .countdown {
-        gap: 0.5rem;
-      }
-      
-      .countdown .value {
-        font-size: min(14vw, 4rem);
-      }
-      
-      #weather-widget {
-        flex-wrap: wrap;
-        justify-content: center;
-        width: auto;
-        max-width: 95%;
-        padding: 6px 8px;
-        bottom: 65px;
-      }
-      
-      #weather-temp, #weather-description, #weather-location {
-        flex: 1 1 auto;
-        min-width: unset;
-        max-width: 30%;
-        font-size: 0.7rem;
-      }
-    }
   </style>
 </head>
 <body>
 
+<div id="refresh-indicator">Pull down to refresh</div>
 <canvas class="snow"></canvas>
 <div class="container">
   <h1>Christmas Countdown</h1>
@@ -497,8 +517,8 @@
 <!-- Connection Status Indicator -->
 <div id="connection-status" class="online" title="Online"></div>
 
-<!-- Weather Widget - Initially hidden -->
-<div id="weather-widget" style="display: none;">
+<!-- Weather Widget - Now visible by default on mobile -->
+<div id="weather-widget" style="display: flex;">
   <div id="weather-temp">--°</div>
   <div id="weather-description">Loading...</div>
   <div id="weather-location"></div>
@@ -557,6 +577,7 @@
   const bgColorInput = document.getElementById('bg-color');
   const textColorInput = document.getElementById('text-color');
   const connectionStatus = document.getElementById('connection-status');
+  const refreshIndicator = document.getElementById('refresh-indicator');
 
   // State
   let w, h, flakes = [];
@@ -564,13 +585,12 @@
   let weatherEnabled = true;
   let weatherTimeout = null;
   let autoZoomSet = false;
-  let lastWeatherUpdate = 0; // Track last weather update time
+  let lastWeatherUpdate = 0;
+  let startY = 0;
+  let isRefreshing = false;
 
-  // Check if in Arc Search browser
-  const isArcSearch = /ArcSearch/i.test(navigator.userAgent);
-  if (isArcSearch) {
-    // Add any Arc-specific adjustments here
-    document.documentElement.style.setProperty('overflow', 'auto');
+  function isMobile() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   }
 
   // Initialize
@@ -582,14 +602,72 @@
     updateCountdown();
     setInterval(updateCountdown, 1000);
     checkConnection();
-    setInterval(checkConnection, 5000); // Check every 5 seconds
+    setInterval(checkConnection, 5000);
     setupZoomControl();
     autoAdjustZoom();
     window.addEventListener('resize', autoAdjustZoom);
+    
+    // Force show weather on mobile
+    if (isMobile() && weatherEnabled) {
+      weatherWidget.style.display = 'flex';
+      fetchWeather();
+    }
+
+    // Setup pull-to-refresh on mobile
+    if (isMobile()) {
+      setupPullToRefresh();
+    }
+  }
+
+  function setupPullToRefresh() {
+    let touchStartY = 0;
+    let touchCurrentY = 0;
+
+    document.addEventListener('touchstart', (e) => {
+      if (window.scrollY <= 0 && !isRefreshing) {
+        touchStartY = e.touches[0].clientY;
+      }
+    }, { passive: true });
+
+    document.addEventListener('touchmove', (e) => {
+      if (window.scrollY <= 0 && !isRefreshing) {
+        touchCurrentY = e.touches[0].clientY;
+        const pullDistance = touchCurrentY - touchStartY;
+        
+        if (pullDistance > 0) {
+          e.preventDefault();
+          refreshIndicator.style.transform = `translateY(${Math.min(pullDistance, 100)}px)`;
+          
+          if (pullDistance > 100) {
+            refreshIndicator.textContent = "Release to refresh";
+          } else {
+            refreshIndicator.textContent = "Pull down to refresh";
+          }
+        }
+      }
+    }, { passive: false });
+
+    document.addEventListener('touchend', (e) => {
+      if (window.scrollY <= 0 && !isRefreshing) {
+        const pullDistance = touchCurrentY - touchStartY;
+        
+        if (pullDistance > 100) {
+          isRefreshing = true;
+          refreshIndicator.textContent = "Refreshing...";
+          refreshIndicator.classList.add('refreshing');
+          
+          // Refresh the page after a short delay
+          setTimeout(() => {
+            location.reload();
+          }, 800);
+        } else {
+          refreshIndicator.style.transform = 'translateY(-50px)';
+        }
+      }
+    }, { passive: true });
   }
 
   function loadPreferences() {
-    // Load preferences from localStorage
     const savedWeatherPref = localStorage.getItem('weatherEnabled');
     weatherEnabled = savedWeatherPref !== null ? savedWeatherPref === 'true' : true;
     weatherToggleBtn.classList.toggle('active', weatherEnabled);
@@ -634,7 +712,6 @@
     const zoomSlider = document.getElementById('zoom-slider');
     const zoomValue = document.getElementById('zoom-value');
     
-    // Load saved zoom level
     const savedZoom = localStorage.getItem('countdownZoom');
     if (savedZoom) {
       document.documentElement.style.setProperty('--zoom-level', savedZoom);
@@ -647,7 +724,7 @@
       document.documentElement.style.setProperty('--zoom-level', zoomLevel);
       zoomValue.textContent = `${Math.round(zoomLevel * 100)}%`;
       localStorage.setItem('countdownZoom', zoomLevel);
-      autoZoomSet = true; // User has manually adjusted, don't auto-adjust anymore
+      autoZoomSet = true;
     });
   }
 
@@ -656,7 +733,6 @@
   }
 
   function handleDocumentClick(e) {
-    // Close settings when clicking outside
     if (settingsMenu.style.display === 'flex' && 
         !e.target.closest('#settings-menu') && 
         !e.target.closest('#settings-toggle')) {
@@ -744,12 +820,9 @@
   function checkConnection() {
     connectionStatus.title = "Checking connection...";
     
-    // First try the navigator.onLine property
     if (navigator.onLine) {
-      // Double check with a small fetch request
       const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Timeout')), 3000)
-      );
+        setTimeout(() => reject(new Error('Timeout')), 3000);
       
       Promise.race([
         fetch('https://httpbin.org/get', { 
@@ -784,37 +857,33 @@
     } else {
       connectionStatus.className = 'offline';
       connectionStatus.title = "Offline";
-      weatherWidget.style.display = 'none';
+      if (!isMobile()) {
+        weatherWidget.style.display = 'none';
+      }
     }
   }
 
   function fetchWeather() {
     if (!weatherEnabled) return;
     
-    // Check if an hour has passed since last update
-    const now = Date.now();
-    if (now - lastWeatherUpdate < 3600000) { // 3600000ms = 1 hour
-      // If less than an hour has passed, just show the existing data
-      if (document.getElementById('weather-temp').textContent !== '--°') {
+    // Don't fetch if less than 1 hour has passed since last update
+    if (Date.now() - lastWeatherUpdate < 3600000) {
+      if (isMobile()) {
         weatherWidget.style.display = 'flex';
       }
       return;
     }
     
-    // Update the last update time
-    lastWeatherUpdate = now;
-    
-    // Show loading state temporarily
     weatherWidget.style.display = 'flex';
     document.getElementById('weather-description').textContent = 'Loading...';
     
-    // Set timeout for weather loading
     if (weatherTimeout) clearTimeout(weatherTimeout);
     weatherTimeout = setTimeout(() => {
-      weatherWidget.style.display = 'none'; // Hide if timeout occurs
+      if (!isMobile()) {
+        weatherWidget.style.display = 'none';
+      }
     }, 15000);
     
-    // First try to get approximate location from IP
     fetch('https://ipapi.co/json/')
       .then(response => {
         if (!response.ok) throw new Error('IP location failed');
@@ -825,7 +894,6 @@
         const country = locationData.country_name || "";
         document.getElementById('weather-location').textContent = `${city}, ${country}`;
         
-        // Then try to get weather from wttr.in
         return fetch(`https://wttr.in/${encodeURIComponent(city)}?format=%t+%C&1`);
       })
       .then(response => {
@@ -841,15 +909,14 @@
           
           document.getElementById('weather-temp').textContent = temp;
           document.getElementById('weather-description').textContent = description.toLowerCase();
-          weatherWidget.style.display = 'flex'; // Show only if we have valid data
+          weatherWidget.style.display = 'flex';
+          lastWeatherUpdate = Date.now();
         } else {
           throw new Error('Invalid weather data');
         }
       })
       .catch(error => {
         clearTimeout(weatherTimeout);
-        console.log("Weather fetch failed, trying geolocation...");
-        // Fallback to browser geolocation
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(
             position => {
@@ -863,21 +930,21 @@
                     document.getElementById('weather-temp').textContent = parts[0];
                     document.getElementById('weather-description').textContent = parts.slice(1).join(" ").toLowerCase();
                     document.getElementById('weather-location').textContent = "Your Location";
-                    weatherWidget.style.display = 'flex'; // Show only if we have valid data
-                  } else {
-                    weatherWidget.style.display = 'none'; // Hide if no valid data
+                    weatherWidget.style.display = 'flex';
+                    lastWeatherUpdate = Date.now();
+                  } else if (isMobile()) {
+                    weatherWidget.style.display = 'flex';
                   }
-                })
-                .catch(() => {
-                  weatherWidget.style.display = 'none'; // Hide if fetch fails
                 });
             },
             () => {
-              weatherWidget.style.display = 'none'; // Hide if geolocation fails
+              if (isMobile()) {
+                weatherWidget.style.display = 'flex';
+              }
             }
           );
-        } else {
-          weatherWidget.style.display = 'none'; // Hide if no geolocation support
+        } else if (isMobile()) {
+          weatherWidget.style.display = 'flex';
         }
       });
   }
@@ -887,10 +954,12 @@
     weatherToggleBtn.classList.toggle('active', weatherEnabled);
     localStorage.setItem('weatherEnabled', weatherEnabled);
     if (weatherEnabled) {
-      lastWeatherUpdate = 0; // Reset timer to force update
+      lastWeatherUpdate = 0;
       fetchWeather();
     } else {
-      weatherWidget.style.display = 'none';
+      if (!isMobile()) {
+        weatherWidget.style.display = 'none';
+      }
       if (weatherTimeout) clearTimeout(weatherTimeout);
     }
   }
@@ -900,9 +969,7 @@
   }
 
   function toggleFullscreen(btn) {
-    // Check if mobile device
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    if (isMobile) {
+    if (isMobile()) {
       alert("Fullscreen mode is not available on mobile devices.");
       return;
     }
@@ -911,7 +978,6 @@
         !document.webkitFullscreenElement && 
         !document.mozFullScreenElement &&
         !document.msFullscreenElement) {
-      // Enter fullscreen
       if (document.documentElement.requestFullscreen) {
         document.documentElement.requestFullscreen();
       } else if (document.documentElement.webkitRequestFullscreen) {
@@ -923,7 +989,6 @@
       }
       btn.textContent = 'Exit Fullscreen';
     } else {
-      // Exit fullscreen
       if (document.exitFullscreen) {
         document.exitFullscreen();
       } else if (document.webkitExitFullscreen) {
@@ -972,7 +1037,6 @@
     navigator.clipboard.writeText(location.href).then(() => {
       alert("Link copied to clipboard!");
     }).catch(err => {
-      // Fallback for browsers that don't support clipboard API
       const textarea = document.createElement('textarea');
       textarea.value = location.href;
       document.body.appendChild(textarea);
