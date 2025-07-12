@@ -52,32 +52,30 @@
       display: flex;
       justify-content: center;
       margin-bottom: min(4vw, 2rem);
-      width: 100%;
-      gap: 0.3rem; /* Reduced gap between elements */
+      gap: 0.1rem; /* Very tight gap between time units */
+      max-width: 90%;
     }
 
     .countdown-block {
       display: flex;
       flex-direction: column;
       align-items: center;
-      flex: 1 1 auto; /* More flexible sizing */
       min-width: 0; /* Allows text to shrink */
     }
 
     .countdown .value {
-      font-size: min(14vw, 6rem); /* Slightly reduced font size */
+      font-size: min(14vw, 5.5rem); /* Slightly reduced font size */
       line-height: 1;
       text-align: center;
       min-width: 2ch;
     }
 
     .countdown .label {
-      font-size: min(3.5vw, 1.1rem); /* Slightly reduced font size */
+      font-size: min(3.5vw, 1rem); /* Slightly reduced font size */
       opacity: 0.8;
       color: inherit;
       text-transform: capitalize;
       margin-top: 0.1rem; /* Reduced margin */
-      min-width: 4ch;
     }
 
     canvas.snow {
@@ -172,7 +170,7 @@
       background-color: rgba(30, 215, 96, 0.4);
     }
 
-    /* Weather Widget - Mobile Optimized */
+    /* Weather Widget - Improved for all devices */
     #weather-widget {
       position: fixed;
       bottom: 20px;
@@ -190,8 +188,8 @@
       color: #1ED760;
       max-width: 95vw;
       box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-      flex-wrap: wrap;
-      justify-content: center;
+      flex-wrap: nowrap;
+      white-space: nowrap;
     }
 
     #weather-temp {
@@ -204,7 +202,7 @@
     #weather-location {
       opacity: 0.9;
       font-size: 0.8rem;
-      max-width: 120px;
+      max-width: 150px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -213,12 +211,77 @@
 
     #weather-description {
       text-transform: capitalize;
-      max-width: 100px;
+      max-width: 120px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
       text-align: center;
       font-size: 0.8rem;
+    }
+
+    /* Location Permission Popup */
+    #location-popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(0, 0, 0, 0.9);
+      border: 2px solid #1ED760;
+      border-radius: 12px;
+      padding: 20px;
+      z-index: 200;
+      max-width: 90vw;
+      width: 350px;
+      text-align: center;
+      display: none;
+    }
+
+    #location-popup h3 {
+      margin-bottom: 15px;
+      color: #1ED760;
+    }
+
+    #location-popup p {
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    #location-popup-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    #location-popup .button {
+      padding: 10px 15px;
+      width: auto;
+      flex: 1;
+    }
+
+    /* Internet Connection Indicator */
+    #connection-status {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      z-index: 100;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 12px;
+      background-color: rgba(0,0,0,0.7);
+      border: 1px solid #1ED760;
+    }
+
+    #connection-status.online {
+      color: #1ED760;
+    }
+
+    #connection-status.offline {
+      color: #ff3333;
     }
 
     /* Color Inputs */
@@ -290,12 +353,8 @@
       }
       
       .countdown {
-        gap: 0.2rem; /* Even smaller gap on mobile */
-      }
-      
-      .countdown-block {
-        min-width: 22%;
-        max-width: 22%;
+        gap: 0.1rem; /* Very tight gap on mobile */
+        max-width: 95%;
       }
       
       .countdown .value {
@@ -303,7 +362,7 @@
       }
       
       .countdown .label {
-        font-size: min(4vw, 1rem);
+        font-size: min(4vw, 0.9rem);
         margin-top: 0.1rem;
       }
       
@@ -336,36 +395,39 @@
       #weather-temp {
         font-size: 0.9rem;
       }
+
+      #location-popup {
+        width: 90%;
+        padding: 15px;
+      }
+
+      #location-popup-buttons {
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      #location-popup .button {
+        width: 100%;
+      }
     }
 
     /* Desktop-specific adjustments */
     @media (min-width: 769px) {
       .countdown {
-        gap: 0.5rem; /* Smaller gap on desktop too */
+        gap: 0.2rem; /* Tight gap on desktop */
       }
       
       .countdown .value {
-        font-size: 5.5rem;
+        font-size: 5rem;
       }
       
       .countdown .label {
-        font-size: 1.1rem;
-        margin-top: 0.2rem; /* Reduced margin */
+        font-size: 1rem;
+        margin-top: 0.2rem;
       }
       
       h1 {
         font-size: 3rem;
-      }
-    }
-
-    /* Large desktop screens */
-    @media (min-width: 1200px) {
-      .countdown {
-        gap: 0.7rem;
-      }
-      
-      .countdown .value {
-        font-size: 6rem;
       }
     }
   </style>
@@ -394,6 +456,19 @@
     </div>
   </div>
 </div>
+
+<!-- Location Permission Popup -->
+<div id="location-popup">
+  <h3>Location Access Needed</h3>
+  <p>To show local weather information, we need your permission to access your location.</p>
+  <div id="location-popup-buttons">
+    <button class="button" onclick="grantLocationPermission()">Allow</button>
+    <button class="button" onclick="denyLocationPermission()">Deny</button>
+  </div>
+</div>
+
+<!-- Internet Connection Indicator -->
+<div id="connection-status" class="online" title="Internet Connection">●</div>
 
 <!-- Weather Widget -->
 <div id="weather-widget">
@@ -443,11 +518,14 @@
   const weatherToggleBtn = document.getElementById('weather-toggle');
   const bgColorInput = document.getElementById('bg-color');
   const textColorInput = document.getElementById('text-color');
+  const connectionStatus = document.getElementById('connection-status');
+  const locationPopup = document.getElementById('location-popup');
 
   // State
   let w, h, flakes = [];
   let countdownEnded = false;
   let weatherEnabled = true;
+  let locationPermissionRequested = false;
 
   // Initialize
   function init() {
@@ -457,6 +535,8 @@
     animateSnow();
     updateCountdown();
     setInterval(updateCountdown, 1000);
+    checkConnection();
+    setInterval(checkConnection, 5000); // Check every 5 seconds
   }
 
   function loadPreferences() {
@@ -471,6 +551,8 @@
     window.addEventListener('resize', handleResize);
     settingsToggle.addEventListener('click', toggleSettingsMenu);
     document.addEventListener('click', handleDocumentClick);
+    window.addEventListener('online', updateConnectionStatus);
+    window.addEventListener('offline', updateConnectionStatus);
   }
 
   function handleResize() {
@@ -561,10 +643,70 @@
     }
   }
 
+  function checkConnection() {
+    // First try the navigator.onLine property
+    if (navigator.onLine) {
+      // Double check with a small fetch request
+      fetch('https://httpbin.org/get', { 
+        method: 'HEAD',
+        cache: 'no-store',
+        mode: 'no-cors'
+      })
+      .then(() => {
+        updateConnectionStatus(true);
+      })
+      .catch(() => {
+        updateConnectionStatus(false);
+      });
+    } else {
+      updateConnectionStatus(false);
+    }
+  }
+
+  function updateConnectionStatus(isOnline) {
+    if (isOnline) {
+      connectionStatus.className = 'online';
+      connectionStatus.title = 'Online';
+      // If weather was disabled due to offline status, try again
+      if (weatherEnabled && weatherWidget.style.display === 'none') {
+        fetchWeather();
+      }
+    } else {
+      connectionStatus.className = 'offline';
+      connectionStatus.title = 'Offline';
+      if (weatherEnabled) {
+        weatherWidget.style.display = 'flex';
+        document.getElementById('weather-description').textContent = 'Offline';
+      }
+    }
+  }
+
+  function showLocationPopup() {
+    if (!locationPermissionRequested) {
+      locationPopup.style.display = 'block';
+      locationPermissionRequested = true;
+    }
+  }
+
+  function grantLocationPermission() {
+    locationPopup.style.display = 'none';
+    fetchWeatherWithLocation();
+  }
+
+  function denyLocationPermission() {
+    locationPopup.style.display = 'none';
+    fetchWeatherWithoutLocation();
+  }
+
   function fetchWeather() {
     if (!weatherEnabled) return;
     
-    // First try to get approximate location from IP
+    // First try to get weather without location
+    fetchWeatherWithoutLocation();
+  }
+
+  function fetchWeatherWithoutLocation() {
+    // Try to get approximate location from IP
     fetch('https://ipapi.co/json/')
       .then(response => {
         if (!response.ok) throw new Error('IP location failed');
@@ -596,13 +738,44 @@
         }
       })
       .catch(error => {
-        console.log("Weather fetch failed, trying geolocation...");
-        // Fallback to browser geolocation
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(
-            position => {
-              const lat = position.coords.latitude;
-              const lon = position.coords.longitude;
+        console.log("Weather fetch failed:", error);
+        // If IP-based location fails, try to get generic weather
+        fetchGenericWeather();
+      });
+  }
+
+  function fetchWeatherWithLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          
+          // First get location name from coordinates
+          fetch(`https://geocode.xyz/${lat},${lon}?json=1`)
+            .then(response => {
+              if (!response.ok) throw new Error('Geocoding failed');
+              return response.json();
+            })
+            .then(locationData => {
+              const city = locationData.city || "Your Location";
+              const country = locationData.country || "";
+              document.getElementById('weather-location').textContent = `${city}, ${country}`;
+              
+              // Then get weather for coordinates
+              return fetch(`https://wttr.in/?format=%t+%C&1&lat=${lat}&lon=${lon}`);
+            })
+            .then(response => response.text())
+            .then(weatherData => {
+              if (weatherData && weatherData.includes("°")) {
+                const parts = weatherData.split(" ");
+                document.getElementById('weather-temp').textContent = parts[0];
+                document.getElementById('weather-description').textContent = parts.slice(1).join(" ").toLowerCase();
+                weatherWidget.style.display = 'flex';
+              }
+            })
+            .catch(error => {
+              console.log("Geolocation weather fetch failed, using coordinates directly");
               fetch(`https://wttr.in/?format=%t+%C&1&lat=${lat}&lon=${lon}`)
                 .then(response => response.text())
                 .then(weatherData => {
@@ -614,14 +787,35 @@
                     weatherWidget.style.display = 'flex';
                   }
                 });
-            },
-            () => {
-              weatherWidget.style.display = 'none';
-            }
-          );
-        } else {
-          weatherWidget.style.display = 'none';
+            });
+        },
+        error => {
+          console.log("Geolocation denied, falling back to IP-based location");
+          fetchWeatherWithoutLocation();
+        },
+        { timeout: 10000 }
+      );
+    } else {
+      console.log("Geolocation not supported, falling back to IP-based location");
+      fetchWeatherWithoutLocation();
+    }
+  }
+
+  function fetchGenericWeather() {
+    fetch('https://wttr.in/?format=%t+%C&1')
+      .then(response => response.text())
+      .then(weatherData => {
+        if (weatherData && weatherData.includes("°")) {
+          const parts = weatherData.split(" ");
+          document.getElementById('weather-temp').textContent = parts[0];
+          document.getElementById('weather-description').textContent = parts.slice(1).join(" ").toLowerCase();
+          document.getElementById('weather-location').textContent = "Global Weather";
+          weatherWidget.style.display = 'flex';
         }
+      })
+      .catch(error => {
+        console.log("Failed to fetch generic weather");
+        weatherWidget.style.display = 'none';
       });
   }
 
@@ -629,7 +823,11 @@
     weatherEnabled = !weatherEnabled;
     weatherToggleBtn.classList.toggle('active', weatherEnabled);
     localStorage.setItem('weatherEnabled', weatherEnabled);
-    weatherEnabled ? fetchWeather() : (weatherWidget.style.display = 'none');
+    if (weatherEnabled) {
+      fetchWeather();
+    } else {
+      weatherWidget.style.display = 'none';
+    }
   }
 
   function toggleSnow() {
@@ -678,8 +876,22 @@
   }
 
   function copyLink() {
-    navigator.clipboard.writeText(location.href);
-    alert("Link copied to clipboard!");
+    navigator.clipboard.writeText(location.href).then(() => {
+      alert("Link copied to clipboard!");
+    }).catch(err => {
+      // Fallback for browsers that don't support clipboard API
+      const textarea = document.createElement('textarea');
+      textarea.value = location.href;
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        alert("Link copied to clipboard!");
+      } catch (err) {
+        alert("Failed to copy link");
+      }
+      document.body.removeChild(textarea);
+    });
   }
 
   function showConfetti() {
