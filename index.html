@@ -72,16 +72,6 @@
       position: relative;
     }
 
-    .countdown-colon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: min(6vw, 3rem);
-      opacity: 0.7;
-      height: min(14vw, 5.5rem);
-      padding: 0 0.1rem;
-    }
-
     .countdown .value {
       font-size: min(14vw, 5.5rem);
       line-height: 1;
@@ -194,7 +184,7 @@
       border: 2px solid #1ED760;
       border-radius: 12px;
       padding: 8px 12px;
-      display: none; /* Changed from flex to none */
+      display: none;
       align-items: center;
       gap: 8px;
       z-index: 50;
@@ -418,12 +408,6 @@
         max-width: 95%;
       }
       
-      .countdown-colon {
-        font-size: min(5vw, 2.5rem);
-        height: min(16vw, 4.5rem);
-        padding: 0;
-      }
-      
       .countdown .value {
         font-size: min(16vw, 4.5rem);
       }
@@ -476,11 +460,6 @@
         gap: 0.5rem;
       }
       
-      .countdown-colon {
-        font-size: 3rem;
-        height: 5rem;
-      }
-      
       .countdown .value {
         font-size: 5rem;
       }
@@ -496,11 +475,6 @@
     
     /* Very small screens */
     @media (max-width: 400px) {
-      .countdown-colon {
-        font-size: min(4vw, 2rem);
-        height: min(14vw, 4rem);
-      }
-      
       .countdown .value {
         font-size: min(14vw, 4rem);
       }
@@ -533,17 +507,14 @@
       <span class="value" id="days">--</span>
       <span class="label">days</span>
     </div>
-    <div class="countdown-colon">:</div>
     <div class="countdown-block">
       <span class="value" id="hours">--</span>
       <span class="label">hours</span>
     </div>
-    <div class="countdown-colon">:</div>
     <div class="countdown-block">
       <span class="value" id="minutes">--</span>
       <span class="label">minutes</span>
     </div>
-    <div class="countdown-colon">:</div>
     <div class="countdown-block">
       <span class="value" id="seconds">--</span>
       <span class="label">seconds</span>
