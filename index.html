@@ -52,7 +52,7 @@
       display: flex;
       justify-content: center;
       margin-bottom: min(4vw, 2rem);
-      gap: 0.8rem; /* Increased spacing between time units */
+      gap: 0.5rem; /* Added some spacing between time units */
       max-width: 90%;
     }
 
@@ -61,17 +61,17 @@
       flex-direction: column;
       align-items: center;
       min-width: 0;
-      position: relative;
+      position: relative; /* For colon positioning */
     }
 
-    .countdown-colon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .countdown-block:not(:last-child)::after {
+      content: ":";
+      position: absolute;
+      right: -0.4rem;
+      top: 50%;
+      transform: translateY(-50%);
       font-size: min(10vw, 4rem);
       opacity: 0.7;
-      height: min(14vw, 5.5rem); /* Match the height of the numbers */
-      padding-bottom: min(3.5vw, 1rem); /* Align with the numbers */
     }
 
     .countdown .value {
@@ -343,14 +343,13 @@
       }
       
       .countdown {
-        gap: 0.5rem;
+        gap: 0.3rem;
         max-width: 95%;
       }
       
-      .countdown-colon {
+      .countdown-block:not(:last-child)::after {
+        right: -0.3rem;
         font-size: min(12vw, 3.5rem);
-        height: min(16vw, 4.5rem);
-        padding-bottom: min(4vw, 0.9rem);
       }
       
       .countdown .value {
@@ -395,13 +394,12 @@
     /* Desktop-specific adjustments */
     @media (min-width: 769px) {
       .countdown {
-        gap: 1rem;
+        gap: 0.5rem;
       }
       
-      .countdown-colon {
+      .countdown-block:not(:last-child)::after {
+        right: -0.4rem;
         font-size: 3.5rem;
-        height: 5rem;
-        padding-bottom: 1rem;
       }
       
       .countdown .value {
@@ -416,25 +414,6 @@
         font-size: 3rem;
       }
     }
-    
-    /* Arc Browser specific fixes */
-    @supports (-webkit-touch-callout: none) {
-      /* Fix for iOS/Arc touch issues */
-      body {
-        -webkit-touch-callout: none;
-        -webkit-user-select: none;
-      }
-      
-      /* Prevent zooming on double-tap */
-      .countdown, .countdown-block, .countdown-colon {
-        touch-action: manipulation;
-      }
-      
-      /* Improve button tap targets */
-      .button {
-        padding: 14px 15px;
-      }
-    }
   </style>
 </head>
 <body>
@@ -447,17 +426,14 @@
       <span class="value" id="days">--</span>
       <span class="label">days</span>
     </div>
-    <div class="countdown-colon">:</div>
     <div class="countdown-block">
       <span class="value" id="hours">--</span>
       <span class="label">hours</span>
     </div>
-    <div class="countdown-colon">:</div>
     <div class="countdown-block">
       <span class="value" id="minutes">--</span>
       <span class="label">minutes</span>
     </div>
-    <div class="countdown-colon">:</div>
     <div class="countdown-block">
       <span class="value" id="seconds">--</span>
       <span class="label">seconds</span>
@@ -533,11 +509,6 @@
     setInterval(updateCountdown, 1000);
     checkConnection();
     setInterval(checkConnection, 5000); // Check every 5 seconds
-    
-    // Arc Browser specific initialization
-    if (navigator.userAgent.includes('Arc')) {
-      document.body.classList.add('arc-browser');
-    }
   }
 
   function loadPreferences() {
@@ -555,17 +526,6 @@
     window.addEventListener('online', updateConnectionStatus);
     window.addEventListener('offline', updateConnectionStatus);
     connectionStatus.addEventListener('click', checkConnection);
-    
-    // Improved touch events for Arc/iOS
-    document.addEventListener('touchstart', handleTouch, { passive: true });
-    document.addEventListener('touchmove', handleTouch, { passive: true });
-  }
-
-  function handleTouch(e) {
-    // Prevent any default touch behaviors that might interfere
-    if (e.target.classList.contains('button') {
-      e.preventDefault();
-    }
   }
 
   function handleResize() {
@@ -840,4 +800,4 @@
   init();
 </script>
 </body>
-</html>
+</html>        the colons are in the wrong place. you have to space the numbers out. make it work on arc serch for android/ios as well
